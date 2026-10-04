@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Qum maydoni</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0d1017;--pn:#161a24;--chip:#212736;--tx:#e9edf6}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+#stage{flex:1;position:relative;min-height:0;background:linear-gradient(#1b2236,#0a0d14)}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#bar{background:var(--pn);padding:8px 8px 10px}
+#els{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none}
+#els::-webkit-scrollbar{display:none}
+.el{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;padding:7px 6px 6px;min-width:58px;border-radius:12px;border:2px solid transparent;background:var(--chip);color:var(--tx);font:500 11px system-ui,sans-serif}
+.el i{width:26px;height:26px;border-radius:50%;display:block;box-shadow:inset 0 -3px 6px rgba(0,0,0,.25)}
+.el.on{border-color:#fff}
+#info{font-size:12px;line-height:1.35;color:#b8c0d4;padding:2px 4px 8px;min-height:2.9em;overflow:hidden}
+#tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;border-radius:999px;background:transparent;color:#9aa4bd;padding:6px 11px;font:600 12px system-ui,sans-serif}
+.tab.on{background:#2c3448;color:#fff}
+#ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+#ctl input{flex:1 1 60px;min-width:36px;accent-color:#ff8a3d}
+.b{border:0;border-radius:10px;background:var(--chip);color:var(--tx);padding:8px 9px;font:600 12px system-ui,sans-serif}
+.b.on{background:#3a5bd0}
+#grav{position:absolute;top:6px;right:12px;z-index:2;font-size:22px;opacity:.75;pointer-events:none}
+.b:active{background:#2c3448}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="stage"><canvas id="cv"></canvas><div id="grav"></div></div>
+  <div id="bar">
+    <div id="info"></div><div id="tabs"></div><div id="els"></div>
+    <div id="ctl">
+      <input id="size" type="range" min="2" max="12" value="5" aria-label="Cho'tka o'lchami">
+      <button class="b" id="tilt">Qiyalash</button>
+      <button class="b" id="gfx">Chiroyli</button>
+      <button class="b" id="erase">Oʻchirgʻich</button>
+      <button class="b" id="pause">To‘xtatish</button>
+      <button class="b" id="clear">Tozalash</button>
+    </div>
+  </div>
+</div>
+<script>
+/* =====================================================================
+   YANGI ELEMENT QO'SHISH: DEFS ro'yxatiga bitta qator qo'shing.
+   kind: SOLID (qotib turadi), POWDER (to'kiladi), LIQUID (oqadi),
+         GAS (ko'tariladi), FIRE (olov).
+   dens: zichlik (og'ir narsa yengilini siqib pastga tushadi).
+   YANGI REAKSIYA: R('a','b','a_yangi','b_yangi',ehtimol) — a va b
+   tegib tursa, ehtimol bo'yicha mos ravishda a_yangi va b_yangi bo'ladi.
+   ('empty' = yo'qoladi). Reaksiya ikkala yo'nalishda ham ishlaydi.
+   ===================================================================== */
+(()=>{
+const K={SOLID:1,POWDER:2,LIQUID:3,GAS:4,FIRE:5};
+const CATS=[['powder','Kukun'],['liquid','Suyuqlik'],['solid','Qattiq'],['gas','Gaz'],['energy','Energiya'],['life','Hayot'],['special','Maxsus']];
+const DEFS=[{id:'empty',name:'Oʻchirgʻich',c:[52,58,76],info:'Tanlangan joydagi hamma narsani oʻchiradi.'}];
+function D(id,name,cat,kind,hex,o,info){const n=parseInt(hex.slice(1),16);
+  DEFS.push(Object.assign({id,name,cat,kind,c:[n>>16,(n>>8)&255,n&255],info},o||{}));}
+const P=K.POWDER,L=K.LIQUID,S=K.SOLID,G=K.GAS,F=K.FIRE;
+/* Kukunlar */
+D('sand','Qum','powder',P,'#e2c170',{dens:1.6},'SiO₂ donalari. Kislotada erimaydi, lavada shishaga aylanadi.');
+D('salt','Tuz','powder',P,'#f1f1ee',{dens:1.5},'NaCl: suvda eriydi, muzni eritadi, kislota bilan HCl gazi beradi.');
+D('coal','Koʻmir','powder',P,'#2b2b30',{dens:1.4},'Uglerod: sekin va uzoq yonadi.');
+D('ash','Kul','powder',P,'#8e8e93',{dens:.9},'Yonishdan qolgan yengil mineral qoldiq.');
+D('snow','Qor','powder',P,'#f4f8ff',{dens:.9},'Muzlagan suv kristallari: issiqda suvga aylanadi.');
+D('soil','Tuproq','powder',P,'#6b4a2f',{dens:1.5},'Suv bilan loyga aylanadi.');
+D('gunpowder','Porox','powder',P,'#3a3a3a',{dens:1.3},'Olov yoki uchqundan portlaydi (oksidlovchi + yonilgʻi).');
+D('sugar','Shakar','powder',P,'#fbf3e4',{dens:1.2},'Saxaroza: yonadi.');
+D('rust','Zang','powder',P,'#a0522d',{dens:1.9},'Fe₂O₃: temir suv va kisloroddan oksidlanadi. Shoʻr suvda tezroq.');
+/* Suyuqliklar */
+D('water','Suv','liquid',L,'#347deb',{dens:1,disp:6,a:225},'H₂O: olovni oʻchiradi, issiqda bugʻga aylanadi.');
+D('saltwater','Shoʻr suv','liquid',L,'#4d93b8',{dens:1.05,disp:6,a:225},'Tuz eritilgan suv: temirni tezroq zanglatadi.');
+D('oil','Moy','liquid',L,'#54381f',{dens:.8,disp:4,a:235},'Suvdan yengil, ustida suzadi. Tez yonadi.');
+D('alcohol','Spirt','liquid',L,'#cfe6ff',{dens:.78,disp:6,a:170},'Yengil va tez yonuvchi suyuqlik.');
+D('honey','Asal','liquid',L,'#e8a317',{dens:1.4,disp:1,slow:.1,maxv:1},'Qovushoq suyuqlik: juda sekin oqadi.');
+D('mud','Loy','liquid',L,'#5a3e2b',{dens:1.7,disp:2,slow:.25,maxv:2},'Tuproq + suv. Urugʻ shu yerda oʻsadi.');
+D('acid','Kislota','liquid',L,'#84ff3e',{dens:1.2,disp:4,a:230,emit:.35},'Temir, tosh, organik moddalarni eritadi; temirdan vodorod ajratadi.');
+D('nitrogen','Suyuq azot','liquid',L,'#bfe9ff',{dens:.8,disp:5,a:200},'≈ −196°C: suvni muzlatadi, olovni oʻchiradi.');
+D('lava','Lava','liquid',L,'#ff5c14',{dens:2.6,disp:2,slow:.3,maxv:3,emit:.8},'Erigan tosh (~1200°C): qumni shishaga, suvda obsidianga aylantiradi.');
+D('mercury','Simob','liquid',L,'#c7ccd6',{dens:3.5,disp:5},'Suyuq metall, juda ogʻir va zaharli.');
+/* Qattiq moddalar */
+D('stone','Tosh','solid',S,'#7a7e8a',{},'Kislotada asta erib CO₂ chiqaradi.');
+D('wood','Yogʻoch','solid',S,'#7c502c',{},'Sekin yonadi, kislotada yemiriladi.');
+D('ice','Muz','solid',S,'#a8def5',{},'Qattiq suv: issiqda eriydi, tuz bilan tezroq eriydi.');
+D('glass','Shisha','solid',S,'#9fd4dc',{a:190},'Qum erishidan hosil boʻladi. Portlashda sinadi.');
+D('iron','Temir','solid',S,'#8d929c',{cond:1},'Elektr oʻtkazadi. Suvda asta zanglaydi.');
+D('copper','Mis','solid',S,'#c8743c',{cond:1},'Elektrni yaxshi oʻtkazadi.');
+D('brick','Gʻisht','solid',S,'#a64b3a',{},'Pishgan loy: issiqqa chidamli.');
+D('obsidian','Obsidian','solid',S,'#2a2438',{},'Lava tez sovishidan hosil boʻlgan vulqon shishasi.');
+D('wax','Mum','solid',S,'#f0e2a8',{},'Yonuvchi qattiq modda.');
+D('sponge','Shimgich','solid',S,'#e5cf5a',{},'Suvni shimib oladi.');
+/* Gazlar */
+D('steam','Bugʻ','gas',G,'#d2dcec',{life:[70,150],end:[['water',.35]]},'Qaynagan suv: sovib suvga qaytadi.');
+D('smoke','Tutun','gas',G,'#6b6b72',{life:[60,120]},'Chala yonish mahsuloti.');
+D('methane','Metan','gas',G,'#a8c8a0',{a:90,leak:1},'CH₄: yonuvchi, olovdan portlaydi.');
+D('hydrogen','Vodorod','gas',G,'#d9e6ff',{a:80,leak:1},'H₂: eng yengil gaz, portlovchi.');
+D('co2','CO₂','gas',G,'#9aa7b4',{a:100,down:1},'Havodan ogʻir (pastga choʻkadi), olovni oʻchiradi.');
+D('toxic','Zaharli gaz','gas',G,'#8fbf3a',{a:110,leak:1},'HCl bugʻi: oʻsimliklarni yoʻq qiladi.');
+/* Energiya */
+D('fire','Olov','energy',F,'#ff961e',{life:[14,34],emit:.9,end:[['smoke',.15],['ash',.05]]},'Yonish: yonuvchi moddalarni tutashtiradi.');
+D('spark','Uchqun','energy',F,'#fff3a0',{life:[4,8],emit:1},'Elektr: temir/mis boʻylab yuguradi, porox va gazni portlatadi.');
+D('explosion','Portlash','energy',F,'#ffd35c',{life:[6,12],emit:1},'Tez kengayuvchi gaz: shisha, muz, gʻishtni sindiradi.');
+/* Hayot */
+D('seed','Urugʻ','life',P,'#9c7b4a',{dens:1.3},'Loy yoki suv bilan oʻsimlikka aylanadi.');
+D('plant','Oʻsimlik','life',S,'#38ac4e',{},'Suv bilan oʻsadi. Yonadi, zaharli gaz va kislotadan nobud boʻladi.');
+D('moss','Moxor','life',S,'#4d7a3a',{},'Nam joyda asta oʻsadi.');
+/* Maxsus */
+D('cloner','Klonlovchi','special',S,'#b04dff',{sp:1},'Tegib turgan birinchi moddani cheksiz koʻpaytiradi.');
+D('void','Yoʻqotuvchi','special',S,'#15151c',{sp:1},'Tegib turgan hamma narsani yoʻq qiladi.');
+D('wall','Devor','special',S,'#4a4f5c',{},'Buzilmas toʻsiq.');
+const ID={};DEFS.forEach((d,i)=>ID[d.id]=i);
+const REACT=DEFS.map(()=>[]);
+function R(a,b,na,nb,p){a=ID[a];b=ID[b];na=ID[na];nb=ID[nb];
+  REACT[a][b]={a:na,b:nb,p};REACT[b][a]={a:nb,b:na,p};}
+
+/* ---- Reaksiyalar: R(a,b,a_yangi,b_yangi,ehtimol) ---- */
+for(const w of ['water','saltwater']){
+  R(w,'fire','steam','empty',.5);       // suv olovni oʻchiradi
+  R(w,'lava','steam','obsidian',.25);   // lava suvda qotadi
+}
+R('lava','ice','obsidian','water',.3);R('fire','ice','empty','water',.3);R('fire','snow','empty','water',.4);
+const FL={plant:.12,moss:.12,seed:.2,wood:.05,coal:.02,wax:.08,sugar:.1,sponge:.05,oil:.5,alcohol:.6};
+for(const k in FL){                     // yonuvchi moddalar
+  R('fire',k,'fire','fire',FL[k]);R('lava',k,'lava','fire',Math.min(1,FL[k]*2.5));R('explosion',k,'explosion','fire',.6);
+}
+for(const k of ['gunpowder','methane','hydrogen']){  // portlovchilar
+  DEFS[ID[k]].boom=1;
+  R('fire',k,'explosion','explosion',.9);R('lava',k,'lava','explosion',.9);
+  R('explosion',k,'explosion','explosion',1);R('spark',k,'empty','explosion',.9);
+}
+for(const k of ['glass','ice','brick'])R('explosion',k,'explosion','empty',.25);
+R('lava','sand','lava','glass',.05);    // qum + issiq = shisha
+R('salt','water','empty','saltwater',.1);R('salt','ice','empty','water',.1);R('salt','snow','empty','water',.1);
+R('soil','water','mud','empty',.04);
+R('seed','mud','plant','mud',.03);R('seed','water','plant','plant',.02);
+R('plant','water','plant','plant',.015);R('moss','water','moss','moss',.008);R('ice','water','ice','ice',.003);
+R('sponge','water','sponge','empty',.15);
+R('iron','water','rust','water',.0005);R('iron','saltwater','rust','saltwater',.003);
+R('acid','iron','hydrogen','empty',.05);R('acid','stone','co2','empty',.05);
+R('acid','salt','toxic','empty',.06);R('acid','ice','empty','water',.1);
+for(const k of ['wood','plant','moss','sponge'])R('acid',k,'empty','empty',.1);
+R('nitrogen','water','empty','ice',.4);R('nitrogen','lava','empty','obsidian',.4);
+R('nitrogen','fire','empty','empty',.6);R('nitrogen','steam','empty','water',.5);
+R('co2','fire','co2','empty',.4);
+for(const k of ['plant','moss','seed'])R('toxic',k,'toxic','empty',.05);
+
+/* ---- Holat ---- */
+const CELL=3;
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const buf=document.createElement('canvas'),bctx=buf.getContext('2d');
+const gbuf=document.createElement('canvas'),gctx=gbuf.getContext('2d');
+const sm=document.createElement('canvas'),sctx=sm.getContext('2d');
+let vel,gd,go,ge,W=0,H=0,type,aux,shade,stamp,img,gimg,frame=0,paused=false,touched=false;
+let sel=1,down=false,cx=0,cy=0,lx=0,ly=0,brush=5;
+let GX=0,GY=1;
+const NB=[[0,-1],[0,1],[-1,0],[1,0]];
+
+function init(){
+  const st=document.getElementById('stage');
+  W=Math.max(40,Math.floor(st.clientWidth/CELL));H=Math.max(40,Math.floor(st.clientHeight/CELL));
+  const n=W*H;type=new Uint8Array(n);aux=new Uint8Array(n);shade=new Uint8Array(n);stamp=new Uint32Array(n);vel=new Uint8Array(n);
+  buf.width=gbuf.width=W;buf.height=gbuf.height=H;
+  sm.width=Math.max(8,W>>2);sm.height=Math.max(8,H>>2);
+  img=bctx.createImageData(W,H);gimg=gctx.createImageData(W,H);
+  gd=new Uint8Array(n*4);go=new Uint8Array(n*4);ge=new Uint8Array(n*4);
+  fit();
+}
+function fit(){
+  const st=document.getElementById('stage'),dpr=Math.min(window.devicePixelRatio||1,1.5);
+  cv.width=Math.round(st.clientWidth*dpr);cv.height=Math.round(st.clientHeight*dpr);
+}
+function set(i,t){
+  type[i]=t;const d=DEFS[t];
+  aux[i]=d.life?d.life[0]+((Math.random()*(d.life[1]-d.life[0]))|0):0;
+  shade[i]=(Math.random()*255)|0;vel[i]=0;stamp[i]=frame;
+}
+function swap(i,j){
+  let t=type[i];type[i]=type[j];type[j]=t;
+  t=aux[i];aux[i]=aux[j];aux[j]=t;
+  t=shade[i];shade[i]=shade[j];shade[j]=t;
+  t=vel[i];vel[i]=vel[j];vel[j]=t;
+  stamp[i]=stamp[j]=frame;
+}
+function canSwap(j,dens){
+  const t=type[j];if(!t)return true;
+  const d=DEFS[t];return (d.kind===K.LIQUID||d.kind===K.GAS)&&(d.kind===K.GAS||d.dens<dens);
+}
+function react(i,x,y,t){
+  const rt=REACT[t];if(!rt.length)return;
+  const n=NB[(Math.random()*4)|0],nx=x+n[0],ny=y+n[1];
+  if(nx<0||nx>=W||ny<0||ny>=H)return;
+  const j=ny*W+nx,r=rt[type[j]];
+  if(!r||Math.random()>r.p)return;
+  if(r.a!==t)set(i,r.a);
+  if(r.b!==type[j])set(j,r.b);
+}
+function conduct(x,y){
+  for(const n of NB){const nx=x+n[0],ny=y+n[1];if(nx<0||nx>=W||ny<0||ny>=H)continue;
+    const j=ny*W+nx,dd=DEFS[type[j]];
+    if(dd.cond&&!aux[j]){aux[j]=1;stamp[j]=frame;}else if(dd.boom)set(j,ID.explosion);}
+}
+function zap(i,x,y){
+  for(const n of NB){const nx=x+n[0],ny=y+n[1];if(nx<0||nx>=W||ny<0||ny>=H)continue;
+    const j=ny*W+nx;
+    if(DEFS[type[j]].cond&&!aux[j]){aux[j]=1;stamp[j]=frame;type[i]=0;aux[i]=0;return true;}}
+  return false;
+}
+function special(i,x,y,t){
+  for(const n of NB){const nx=x+n[0],ny=y+n[1];if(nx<0||nx>=W||ny<0||ny>=H)continue;
+    const j=ny*W+nx,tj=type[j];
+    if(t===ID.void){if(tj&&tj!==t&&tj!==ID.wall&&tj!==ID.cloner){type[j]=0;aux[j]=0;}}
+    else if(!aux[i]){if(tj&&tj!==t&&tj!==ID.wall&&tj!==ID.void)aux[i]=tj;}
+    else if(!tj&&Math.random()<.15)set(j,aux[i]);}
+}
+function free(x,y){return x>=0&&x<W&&y>=0&&y<H&&!type[y*W+x];}
+function step(){
+  frame++;
+  const PX=-GY,PY=GX,diag=GX&&GY;
+  for(let yy=0;yy<H;yy++){
+    const y=GY>0?H-1-yy:yy;
+    const fw=GX>0?0:GX<0?1:((frame+y)&1);
+    for(let k=0;k<W;k++){
+      const x=fw?k:W-1-k,i=y*W+x,t=type[i];
+      if(!t||stamp[i]===frame)continue;
+      react(i,x,y,t);
+      if(type[i]!==t||stamp[i]===frame)continue;
+      const d=DEFS[t],kd=d.kind;
+      if(d.cond){if(aux[i]>0){if(aux[i]===1)conduct(x,y);aux[i]=aux[i]>=8?0:aux[i]+1;}continue;}
+      if(kd===K.SOLID){if(d.sp)special(i,x,y,t);continue;}
+      if(t===ID.spark&&zap(i,x,y))continue;
+      if(kd===K.POWDER||kd===K.LIQUID){
+        if(d.slow&&Math.random()>d.slow)continue;
+        // Erkin tushish: tezlanish (vel) bilan, har kadrda bir necha katak
+        const v=vel[i],mxv=d.maxv||(kd===K.POWDER?6:8);
+        let cur=i,cx=x,cy=y,moved=0;
+        for(let s=1+(v>>1);s>0;s--){
+          const nx=cx+GX,ny=cy+GY;
+          if(nx<0||nx>=W||ny<0||ny>=H)break;
+          const j=ny*W+nx;
+          if(!canSwap(j,d.dens)||(type[j]&&Math.random()>.6))break;
+          swap(cur,j);cur=j;cx=nx;cy=ny;moved++;
+        }
+        if(moved){vel[cur]=Math.min(v+1,mxv);continue;}
+        const sg=Math.random()<.5?1:-1;
+        const alts=diag?[[GX,0],[0,GY]]:[[GX+PX*sg,GY+PY*sg],[GX-PX*sg,GY-PY*sg]];
+        if(diag&&sg<0)alts.reverse();
+        let mv=false;
+        for(const al of alts){
+          const nx=x+al[0],ny=y+al[1];
+          if(nx<0||nx>=W||ny<0||ny>=H)continue;
+          const j=ny*W+nx;
+          if(!canSwap(j,d.dens))continue;
+          if(!diag&&!canSwap((y+al[1]-GY)*W+x+al[0]-GX,d.dens))continue;
+          swap(i,j);vel[j]=v>0?v-1:0;mv=true;break;
+        }
+        if(mv)continue;
+        vel[i]=0;
+        if(kd===K.LIQUID){   // yon tomonga yoyilish (urilish tezligi qoʻshiladi)
+          const dsp=(d.disp||3)+(v>>1);
+          for(const s2 of [sg,-sg]){
+            let tx=x,ty=y;
+            for(let m=1;m<=dsp;m++){const nx=x+PX*s2*m,ny=y+PY*s2*m;if(!free(nx,ny))break;tx=nx;ty=ny;}
+            if(tx!==x||ty!==y){swap(i,ty*W+tx);break;}
+          }
+        }
+      }else{
+        if(d.life&&--aux[i]<=0){
+          let r=Math.random(),nt=0;for(const e of d.end||[]){if((r-=e[1])<0){nt=ID[e[0]];break;}}
+          set(i,nt);continue;
+        }
+        const rx=d.down?GX:-GX,ry=d.down?GY:-GY,qx=-ry,qy=rx;
+        if(d.leak&&!(x+rx>=0&&x+rx<W&&y+ry>=0&&y+ry<H)&&Math.random()<.05){type[i]=0;aux[i]=0;continue;}
+        const a=Math.random()<.5?1:-1;
+        if(Math.random()<.35&&free(x+qx*a,y+qy*a)){swap(i,(y+qy*a)*W+x+qx*a);continue;}
+        if(free(x+rx,y+ry)){swap(i,(y+ry)*W+x+rx);continue;}
+        if(rx&&ry){if(free(x+rx,y)){swap(i,y*W+x+rx);continue;}if(free(x,y+ry))swap(i,(y+ry)*W+x);}
+        else if(free(x+rx+qx*a,y+ry+qy*a))swap(i,(y+ry+qy*a)*W+x+rx+qx*a);
+      }
+    }
+  }
+}
+function paint(px,py){
+  const r=brush,r2=r*r+r*.5;
+  for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+    if(dx*dx+dy*dy>r2)continue;
+    const x=Math.round(px)+dx,y=Math.round(py)+dy;
+    if(x<0||x>=W||y<0||y>=H)continue;
+    const i=y*W+x;
+    if(sel===0){type[i]=0;aux[i]=0;continue;}
+    if(type[i])continue;
+    const kd=DEFS[sel].kind;
+    if(kd===K.SOLID||Math.random()<.8)set(i,sel);
+  }
+}
+function render2d(){
+  const p=img.data,g=gimg.data,n=W*H;
+  for(let i=0,o=0;i<n;i++,o+=4){
+    const t=type[i];
+    if(!t){p[o+3]=0;g[o+3]=0;continue;}
+    const d=DEFS[t];let r=d.c[0],gr=d.c[1],b=d.c[2],al=d.a||255;
+    let sh=.86+.28*shade[i]/255;
+    if(t===ID.fire){
+      const f=aux[i]/d.life[1];
+      r=255;gr=70+160*f;b=20+90*f*f;al=Math.min(255,90+260*f);sh=1;
+    }else if(t===ID.lava){
+      sh*=.9+.2*Math.sin(frame*.06+shade[i]*.1);
+    }else if(d.kind===K.GAS){
+      al=d.life?Math.min(150,aux[i]*2):(d.a||100);
+    }else if(d.kind===K.FIRE){
+      al=Math.min(255,120+200*aux[i]/d.life[1]);sh=1.1;
+    }else if(d.cond&&aux[i]>0&&aux[i]<5){r=255;gr=240;b=150;sh=1;}
+    r=Math.min(255,r*sh);gr=Math.min(255,gr*sh);b=Math.min(255,b*sh);
+    p[o]=r;p[o+1]=gr;p[o+2]=b;p[o+3]=al;
+    if(d.emit){g[o]=r;g[o+1]=gr;g[o+2]=b;g[o+3]=255*d.emit*(al/255);}else if(d.cond&&aux[i]>0&&aux[i]<5){g[o]=r;g[o+1]=gr;g[o+2]=b;g[o+3]=220;}else g[o+3]=0;
+  }
+  bctx.putImageData(img,0,0);gctx.putImageData(gimg,0,0);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(buf,0,0,cv.width,cv.height);
+  // Yorug'lik (glow): kichik nusxani kattalashtirib qo'shamiz
+  sctx.clearRect(0,0,sm.width,sm.height);
+  sctx.imageSmoothingEnabled=true;sctx.drawImage(gbuf,0,0,sm.width,sm.height);
+  ctx.globalCompositeOperation='lighter';ctx.globalAlpha=.85;
+  ctx.drawImage(sm,0,0,cv.width,cv.height);
+  ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+}
+/* ---- WebGL: silliq (pikselsiz) chizish ---- */
+const VS='attribute vec2 p;varying vec2 uv;void main(){uv=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}';
+const FS=`
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+varying vec2 uv;
+uniform sampler2D uD,uO,uE,uP;
+uniform vec2 uS;
+uniform vec2 uG;
+float occ(vec2 q){vec4 c=texture2D(uO,q);return c.r+c.g;}
+vec3 em(vec2 q){return texture2D(uE,q).rgb;}
+void main(){
+  vec2 px=1./uS;
+  vec4 o=texture2D(uO,uv)*4.;
+  o+=texture2D(uO,uv+vec2(.5,.5)*px)+texture2D(uO,uv+vec2(-.5,.5)*px)+texture2D(uO,uv+vec2(.5,-.5)*px)+texture2D(uO,uv+vec2(-.5,-.5)*px);
+  o/=8.;
+  float fh=clamp(o.r+o.g,0.,1.);
+  float gx=occ(uv+vec2(1.1,0.)*px)-occ(uv-vec2(1.1,0.)*px);
+  float gy=occ(uv+vec2(0.,1.1)*px)-occ(uv-vec2(0.,1.1)*px);
+  vec3 nn=normalize(vec3(-gx*1.8,-gy*1.8,1.));
+  vec3 L=normalize(vec3(-.45,-.65,.62));
+  float df=clamp(dot(nn,L),0.,1.);
+  float liq=o.g/(o.r+o.g+.001);
+  float lit=mix(.7+.55*df,.86+.3*df,liq);
+  float sp=pow(clamp(dot(nn,normalize(L+vec3(0.,0.,1.))),0.,1.),20.)*liq*.6;
+  float dep=(occ(uv-uG*3.*px)+occ(uv-uG*7.*px))*.5;
+  vec3 cs=vec3(0.),gc=vec3(0.);float ws=0.,al=0.,gw=0.;
+  for(int i=0;i<5;i++){
+    vec2 q=uv;
+    if(i==1)q.x+=.8*px.x;
+    if(i==2)q.x-=.8*px.x;
+    if(i==3)q.y+=.8*px.y;
+    if(i==4)q.y-=.8*px.y;
+    vec4 d=texture2D(uD,q);
+    float t=floor(d.r*255.+.5);
+    float cls=floor(texture2D(uP,vec2((t+.5)/64.,.75)).r*255.+.5);
+    vec4 c0=texture2D(uP,vec2((t+.5)/64.,.25));
+    if(cls>.5&&cls<3.5){float w=(i==0)?2.:1.;cs+=c0.rgb*(.86+.28*d.g)*w;ws+=w;al+=c0.a*w;}
+    else if(cls>3.5&&cls<4.5){gc+=c0.rgb;gw+=1.;}
+  }
+  if(ws>.5){cs/=ws;al/=ws;}else{cs=vec3(.4);al=1.;}
+  vec3 bg=mix(vec3(.11,.14,.22),vec3(.035,.045,.075),uv.y);
+  bg*=1.-.35*length(uv-.5);
+  float m=smoothstep(.34,.66,fh)*al;
+  vec3 col=mix(bg,cs*lit*(1.-.3*dep*liq)+sp,m);
+  if(gw>.5)col=mix(col,gc/gw,clamp(o.b,0.,1.));
+  vec3 g=(em(uv+vec2(3.,0.)*px)+em(uv-vec2(3.,0.)*px)+em(uv+vec2(0.,3.)*px)+em(uv-vec2(0.,3.)*px))*.5
+        +(em(uv+vec2(6.,6.)*px)+em(uv+vec2(-6.,6.)*px)+em(uv+vec2(6.,-6.)*px)+em(uv+vec2(-6.,-6.)*px))*.35;
+  col+=em(uv)+g*.16;
+  gl_FragColor=vec4(clamp(col,0.,1.),1.);
+}`;
+const glc=document.createElement('canvas');
+glc.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
+let gl=null,useGL=false,gprog,gtex,gSz,gGrav;
+function initGL(){
+  gl=glc.getContext('webgl',{antialias:false,alpha:false});
+  if(!gl)throw new Error('WebGL yoʻq');
+  const sh=(ty,src)=>{const x=gl.createShader(ty);gl.shaderSource(x,src);gl.compileShader(x);
+    if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;};
+  gprog=gl.createProgram();gl.attachShader(gprog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(gprog,sh(gl.FRAGMENT_SHADER,FS));
+  gl.linkProgram(gprog);
+  if(!gl.getProgramParameter(gprog,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(gprog));
+  gl.useProgram(gprog);
+  gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(gprog,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  gtex=[0,1,2,3].map(k=>{
+    const t=gl.createTexture(),f=(k===1||k===2)?gl.LINEAR:gl.NEAREST;
+    gl.activeTexture(gl.TEXTURE0+k);gl.bindTexture(gl.TEXTURE_2D,t);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,f);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,f);
+    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+    return t;});
+  ['uD','uO','uE','uP'].forEach((n,k)=>gl.uniform1i(gl.getUniformLocation(gprog,n),k));
+  gSz=gl.getUniformLocation(gprog,'uS');gGrav=gl.getUniformLocation(gprog,'uG');
+  const pal=new Uint8Array(64*2*4);   // 1-qator: rang+shaffoflik, 2-qator: tur (kind)
+  DEFS.forEach((d,i)=>{pal.set([d.c[0],d.c[1],d.c[2],d.a||255],i*4);pal.set([d.kind||0,0,0,255],(64+i)*4);});
+  gl.activeTexture(gl.TEXTURE3);gl.bindTexture(gl.TEXTURE_2D,gtex[3]);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,64,2,0,gl.RGBA,gl.UNSIGNED_BYTE,pal);
+}
+function fillGL(){
+  const n=W*H;
+  for(let i=0,o=0;i<n;i++,o+=4){
+    const t=type[i];
+    gd[o]=t;gd[o+1]=shade[i];gd[o+2]=aux[i];gd[o+3]=255;
+    go[o]=go[o+1]=go[o+2]=0;go[o+3]=255;ge[o]=ge[o+1]=ge[o+2]=0;ge[o+3]=255;
+    if(!t)continue;
+    const d=DEFS[t],kd=d.kind;
+    if(kd===1||kd===2)go[o]=255;
+    else if(kd===3)go[o+1]=255;
+    else if(kd===4)go[o+2]=d.life?Math.min(150,aux[i]*2):(d.a||100);
+    if(kd===5){
+      const f=aux[i]/d.life[1];
+      if(t===ID.fire){const k=.35+.65*f;ge[o]=255*k;ge[o+1]=(70+160*f)*k;ge[o+2]=(20+90*f*f)*k;}
+      else{const k=.5+.5*f;ge[o]=d.c[0]*k;ge[o+1]=d.c[1]*k;ge[o+2]=d.c[2]*k;}
+    }else if(d.emit){
+      const k=d.emit*.55*(t===ID.lava?.9+.2*Math.sin(frame*.06+shade[i]*.1):1);
+      ge[o]=d.c[0]*k;ge[o+1]=d.c[1]*k;ge[o+2]=d.c[2]*k;
+    }else if(d.cond&&aux[i]>0&&aux[i]<5){ge[o]=255;ge[o+1]=240;ge[o+2]=140;}
+  }
+}
+function renderGL(){
+  fillGL();
+  if(glc.width!==cv.width||glc.height!==cv.height){glc.width=cv.width;glc.height=cv.height;}
+  gl.viewport(0,0,glc.width,glc.height);
+  [gd,go,ge].forEach((a,k)=>{gl.activeTexture(gl.TEXTURE0+k);gl.bindTexture(gl.TEXTURE_2D,gtex[k]);
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,W,H,0,gl.RGBA,gl.UNSIGNED_BYTE,a);});
+  gl.uniform2f(gSz,W,H);gl.uniform2f(gGrav,GX,GY);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+}
+function render(){if(useGL)renderGL();else render2d();}
+function loop(){
+  if(down){
+    const dist=Math.hypot(cx-lx,cy-ly),steps=Math.max(1,Math.ceil(dist/(brush*.6)));
+    for(let s=1;s<=steps;s++)paint(lx+(cx-lx)*s/steps,ly+(cy-ly)*s/steps);
+    lx=cx;ly=cy;touched=true;
+  }
+  if(!paused)step();
+  render();
+  requestAnimationFrame(loop);
+}
+
+/* ---- Boshqaruv ---- */
+function pos(e){const r=cv.getBoundingClientRect();cx=(e.clientX-r.left)/r.width*W;cy=(e.clientY-r.top)/r.height*H;}
+cv.addEventListener('pointerdown',e=>{down=true;cv.setPointerCapture(e.pointerId);pos(e);lx=cx;ly=cy;});
+cv.addEventListener('pointermove',e=>{if(down)pos(e);});
+['pointerup','pointercancel'].forEach(ev=>cv.addEventListener(ev,()=>{down=false;}));
+const els=document.getElementById('els'),tabs=document.getElementById('tabs'),info=document.getElementById('info');
+let cat='powder';
+function showInfo(){info.textContent=DEFS[sel].name+': '+DEFS[sel].info;}
+function build(){
+  [...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));
+  els.innerHTML='';
+  DEFS.forEach((d,i)=>{
+    if(d.cat!==cat)return;
+    const b=document.createElement('button');b.className='el'+(i===sel?' on':'');
+    b.innerHTML='<i style="background:rgb('+d.c.join(',')+')"></i>'+d.name;
+    b.onclick=()=>{sel=i;build();showInfo();};els.appendChild(b);
+  });
+}
+CATS.forEach(c=>{const b=document.createElement('button');b.className='tab';b.dataset.c=c[0];b.textContent=c[1];
+  b.onclick=()=>{cat=c[0];build();};tabs.appendChild(b);});
+document.getElementById('erase').onclick=()=>{sel=0;build();showInfo();};
+build();showInfo();
+document.getElementById('size').oninput=e=>{brush=+e.target.value;};
+document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'Davom etish':'Toʻxtatish';};
+document.getElementById('clear').onclick=()=>{type.fill(0);aux.fill(0);};
+window.addEventListener('resize',()=>{if(!touched)init();else fit();});
+
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){
+  tg.ready();tg.expand();
+  try{tg.setHeaderColor('#0d1017');tg.setBackgroundColor('#0d1017');}catch(e){}
+  if(tg.disableVerticalSwipes)tg.disableVerticalSwipes();
+}
+let glOK=false;
+try{initGL();document.getElementById('stage').appendChild(glc);glOK=useGL=true;cv.style.opacity=0;}
+catch(e){console.warn('WebGL ishlamadi, oddiy grafika:',e);}
+const gb=document.getElementById('gfx');gb.textContent=glOK?'Chiroyli':'Oddiy';
+gb.onclick=()=>{if(!glOK)return;useGL=!useGL;glc.style.display=useGL?'block':'none';cv.style.opacity=useGL?0:1;gb.textContent=useGL?'Chiroyli':'Oddiy';};
+/* ---- Telefonni qiyalash: gravitatsiya yoʻnalishi sensordan olinadi ---- */
+const ARR={'0,1':'↓','1,1':'↘','1,0':'→','1,-1':'↗','0,-1':'↑','-1,-1':'↖','-1,0':'←','-1,1':'↙'};
+const gravEl=document.getElementById('grav'),tiltBtn=document.getElementById('tilt');
+let tilt=false,first=true,tsign=1,sgx=0,sgy=1,motionOn=false;
+function setG(a,b){GX=a;GY=b;gravEl.textContent=tilt?ARR[a+','+b]:'';}
+function feed(ax,ay){
+  if(!tilt||ax==null||ay==null)return;
+  if(first){first=false;tsign=ay<-4?-1:1;sgx=-ax*tsign;sgy=ay*tsign;}   // birinchi holat: telefon tik tutilgan deb olinadi
+  sgx+=(-ax*tsign-sgx)*.25;sgy+=(ay*tsign-sgy)*.25;
+  const m=Math.hypot(sgx,sgy);if(m<3)return;                          // yotiq tursa oʻzgarmaydi
+  const nx=sgx/m,ny=sgy/m,qx=nx>.38?1:nx<-.38?-1:0,qy=ny>.38?1:ny<-.38?-1:0;
+  if((qx||qy)&&(qx!==GX||qy!==GY))setG(qx,qy);
+}
+function motionFallback(){
+  const go=()=>{if(motionOn)return;motionOn=true;
+    window.addEventListener('devicemotion',e=>{const a=e.accelerationIncludingGravity;if(a)feed(a.x,a.y);});};
+  const R=window.DeviceMotionEvent&&DeviceMotionEvent.requestPermission;
+  if(R)DeviceMotionEvent.requestPermission().then(r=>{if(r==='granted')go();}).catch(()=>{});else go();
+}
+function setTilt(on){
+  tilt=on;first=true;tiltBtn.classList.toggle('on',on);
+  if(!on){setG(0,1);if(tg&&tg.Accelerometer&&tg.Accelerometer.isStarted)try{tg.Accelerometer.stop();}catch(e){}return;}
+  setG(0,1);
+  if(tg&&tg.Accelerometer&&tg.isVersionAtLeast&&tg.isVersionAtLeast('8.0')){
+    tg.onEvent('accelerometerChanged',()=>feed(tg.Accelerometer.x,tg.Accelerometer.y));
+    tg.onEvent('accelerometerFailed',motionFallback);
+    try{tg.Accelerometer.start({refresh_rate:50},ok=>{if(!ok)motionFallback();});}catch(e){motionFallback();}
+  }else motionFallback();
+  setTimeout(()=>{if(tilt&&first){setTilt(false);info.textContent='Sensor topilmadi: qiyalash faqat telefonda ishlaydi.';}},2500);
+}
+tiltBtn.onclick=()=>setTilt(!tilt);
+init();loop();
+})();
+</script>
+</body>
+</html>
