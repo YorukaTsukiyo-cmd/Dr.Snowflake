@@ -443,6 +443,24 @@ D('funnel','Voronka','tools',S,'#cfe9f2',{stamp:1},'Bosilgan joyga voronka qoʻy
 D('magnet','Magnit','tools',S,'#c03030',{mag:1},'Temir qipiqni oʻziga tortadi.');
 D('battery','Batareya','tools',S,'#3a8f4a',{bat:1},'Yaqin oʻtkazgichga (temir, mis, tuzli suv) davriy elektr impulslari beradi.');
 D('lamp','Lampochka','tools',S,'#e8e0b0',{lamp:1},'Yonidagi sim orqali tok oʻtganda yonadi.');
+/* ---- Yangi elementlar (eski saqlanmalar buzilmasligi uchun roʻyxat OXIRIGA qoʻshilgan) ---- */
+D('sulfur','Oltingugurt','powder',P,'#e8d84a',{dens:1.4},'S: yonganda zaharli gaz (SO₂) chiqaradi.');
+D('phosphorus','Fosfor','powder',P,'#d9a07a',{dens:1.3},'Juda past haroratda (60°C) oʻz-oʻzidan alangalanadi.');
+D('dryice','Quruq muz','powder',P,'#dfe9f2',{dens:1.1},'Qattiq CO₂ (−78°C): isiganda toʻgʻridan-toʻgʻri gazga aylanadi.');
+D('gold','Oltin','solid',S,'#f2c230',{},'Kislotada erimaydi, elektrni yaxshi oʻtkazadi.');
+D('silver','Kumush','solid',S,'#d8dde6',{},'Eng yaxshi elektr oʻtkazgich.');
+D('aluminum','Alyuminiy','solid',S,'#b9c0cc',{},'Yengil metall: ishqor va kislotada vodorod ajratadi.');
+D('zinc','Rux','solid',S,'#9fb0b8',{},'Kislotada vodorod ajratadi, elektr oʻtkazadi.');
+D('lead','Qoʻrgʻoshin','solid',S,'#4f5560',{},'Ogʻir va yumshoq metall, elektr oʻtkazadi.');
+D('plastic','Plastmassa','solid',S,'#e0453a',{},'Yonganda qora tutun chiqaradi.');
+D('fuse','Pilik','solid',S,'#8a7a4a',{},'Sekin yonuvchi shnur: portlovchiga olov yetkazadi.');
+D('tnt','Trotil (TNT)','special',S,'#c0392b',{},'Olov, uchqun yoki portlashdan kuchli portlaydi.');
+D('flower','Gul','life',S,'#e84a8a',{},'Chiroyli oʻsimlik: yonadi, kislota va zaharli gazdan nobud boʻladi.');
+D('gasoline','Benzin','liquid',L,'#d9c04a',{dens:.72,disp:6,a:210},'Juda yengil va tez alangalanuvchi suyuqlik, suv ustida suzadi.');
+D('napalm','Napalm','liquid',L,'#ff8a2a',{dens:.9,disp:2,slow:.15,maxv:2,a:235},'Qovushoq yonuvchi gel: yopishib, uzoq yonadi.');
+D('chlorine','Xlor','gas',G,'#c8e04a',{a:110,leak:1},'Zaharli sariq-yashil gaz: oʻsimlikni yoʻq qiladi, natriy bilan tuz hosil qiladi.');
+D('oxygen','Kislorod','gas',G,'#bfe4ff',{a:70,leak:1},'Yonishni kuchaytiradi: olovga tegsa alanga kuchayadi.');
+D('helium','Geliy','gas',G,'#ffd6f0',{a:70,leak:1},'Hamma gazdan yengil: tez koʻtariladi, yonmaydi.');
 const ID={};DEFS.forEach((d,i)=>ID[d.id]=i);
 /* Xossalar: t0 boshlangʻich harorat, ign yonish harorati, burn yonish davomi,
    res qoldiq, hi/lo = [harorat, natija, yashirin issiqlik] fazaviy oʻtish, kc issiqlik oʻtkazuvchanlik */
@@ -460,6 +478,11 @@ for(const k in PROP)Object.assign(DEFS[ID[k]],PROP[k]);
 const PROP2={water:{cond:1},saltwater:{cond:1},acid:{cond:1},dilacid:{cond:1},mercury:{cond:1},lye:{cond:1},
  ethsol:{ign:200,burn:40},ash:{light:1},snow:{light:1},magnesium:{ign:420,burn:70,res:'ash'}};
 for(const k in PROP2)Object.assign(DEFS[ID[k]],PROP2[k]);
+const PROP3={sulfur:{ign:250,burn:50,res:'toxic'},phosphorus:{ign:60,burn:60,res:'smoke'},tnt:{ign:220,boom:1},
+ dryice:{t0:-78,hi:[-60,'co2',50],kc:.12},gold:{cond:1,kc:.3},silver:{cond:1,kc:.35},aluminum:{cond:1,kc:.3},zinc:{cond:1,kc:.25},lead:{cond:1,kc:.15},
+ plastic:{ign:300,burn:80,res:'smoke'},fuse:{ign:150,burn:40,res:'ash',kc:.03},flower:{ign:230,burn:50,res:'ash',kc:.06},
+ gasoline:{ign:150,burn:50,res:'smoke'},napalm:{ign:120,burn:150,res:'smoke'}};
+for(const k in PROP3)Object.assign(DEFS[ID[k]],PROP3[k]);
 const STAMPS={tube:[...Array(11).fill('#....#'),'######'],beaker:[...Array(10).fill('#........#'),'##########'],
  erlen:['..#..#..','..#..#..','..#..#..','.#....#.','#......#','########'],
  funnel:['#.......#','.#.....#.','..#...#..','...#.#...','...#.#...','...#.#...']};
@@ -510,6 +533,18 @@ R('filings','water','rust','water',.003);
 R('acid','magnesium','hydrogen','empty',.1,80);R('dilacid','magnesium','hydrogen','empty',.06,40);R('vinegar','magnesium','hydrogen','empty',.02,10);
 R('quicklime','water','empty','lye',.15,250);R('quicklime','saltwater','empty','lye',.12,250);
 R('soda','acid','co2','saltwater',.2,30);R('soda','dilacid','co2','saltwater',.15,20);
+
+/* Yangi reaksiyalar */
+R('explosion','tnt','explosion','explosion',1);R('spark','tnt','empty','explosion',.9);
+R('acid','zinc','hydrogen','empty',.07,60);R('dilacid','zinc','hydrogen','empty',.03,30);
+R('acid','aluminum','hydrogen','empty',.05,50);R('lye','aluminum','hydrogen','lye',.04,100);
+R('acid','plastic','empty','empty',.01);R('acid','flower','empty','empty',.1);R('dilacid','flower','empty','empty',.035);
+for(const k of ['plant','moss','seed','flower'])R('chlorine',k,'chlorine','empty',.06);
+R('toxic','flower','toxic','empty',.05);
+R('chlorine','sodium','empty','salt',.4,200);R('chlorine','potassium','empty','salt',.4,300);R('chlorine','hydrogen','toxic','toxic',.2,100);
+R('oxygen','fire','fire','fire',.35);
+R('dryice','water','co2','water',.05,-30);R('dryice','saltwater','co2','saltwater',.05,-30);
+R('acid','fuse','empty','empty',.1);
 
 /* ---- Holat ---- */
 const CELL=3;
