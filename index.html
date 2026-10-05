@@ -43,6 +43,11 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
 #mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 #mtabs{display:flex;gap:4px}
 .mpage{display:none}.mpage.on{display:block}
+#mtabs{overflow-x:auto}
+#fNick,#fSearch{width:100%;box-sizing:border-box;background:var(--chip);color:var(--tx);border:1px solid #2c3448;border-radius:10px;padding:10px;font:600 14px system-ui,sans-serif;margin:8px 0}
+.fi{display:flex;align-items:center;gap:10px;width:100%;border:0;border-top:1px solid #232a3a;background:transparent;color:var(--tx);padding:10px 0;font:600 14px system-ui,sans-serif;text-align:left}
+#fMsg{margin:8px 0}#fvLab{width:100%;border-radius:10px;image-rendering:pixelated;background:#0e1118;margin-top:10px}
+#fvHead{display:flex;align-items:center;gap:12px;margin:6px 0 10px}
 #pcard{display:flex;align-items:center;gap:14px;margin-bottom:14px}
 #pav{width:64px;height:64px;border-radius:50%;background:#2c3448;display:flex;align-items:center;justify-content:center;font:700 26px system-ui,sans-serif;overflow:hidden;flex:0 0 auto}
 #pname{width:100%;box-sizing:border-box;background:var(--chip);border:0;border-radius:10px;color:var(--tx);padding:8px 10px;font:600 15px system-ui,sans-serif}
@@ -91,9 +96,180 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
 .rankitem .ri{width:25px;height:25px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#2c3448}
 .rankitem.active{color:#fff;background:#2c3448;box-shadow:inset 0 0 0 1px #4b5877}
 .rankitem.locked{opacity:.55}
+
+/* ===== Snowflake Lab! — startup glitch intro ===== */
+#slIntro{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 45%,rgba(74,103,190,.16),transparent 32%),
+    radial-gradient(circle at 20% 80%,rgba(0,220,255,.07),transparent 28%),
+    #05070c;
+  opacity:1;
+  visibility:visible;
+  transition:opacity .65s ease,visibility .65s ease;
+  pointer-events:all;
+}
+#slIntro.sl-hide{opacity:0;visibility:hidden;pointer-events:none}
+#slIntro::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(to bottom,rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,transparent 1px,transparent 4px),
+    linear-gradient(90deg,transparent 0 48%,rgba(105,218,255,.025) 50%,transparent 52%);
+  mix-blend-mode:screen;
+  opacity:.7;
+  animation:slScan 1.7s linear infinite;
+}
+#slIntro::after{
+  content:"";
+  position:absolute;
+  inset:-30%;
+  background:conic-gradient(from 90deg,transparent 0 70%,rgba(91,217,255,.055),transparent 76% 100%);
+  animation:slSpin 5s linear infinite;
+}
+.sl-grid{
+  position:absolute;
+  inset:-20%;
+  opacity:.18;
+  background-image:
+    linear-gradient(rgba(105,170,255,.13) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(105,170,255,.13) 1px,transparent 1px);
+  background-size:44px 44px;
+  transform:perspective(500px) rotateX(58deg) translateY(18%);
+  transform-origin:center bottom;
+  animation:slGrid 3s ease-in-out infinite alternate;
+}
+.sl-core{
+  position:relative;
+  z-index:2;
+  width:min(92vw,900px);
+  text-align:center;
+  animation:slCore .9s cubic-bezier(.2,.8,.2,1) both;
+}
+.sl-eyebrow{
+  margin-bottom:13px;
+  color:#80b8d8;
+  font:700 10px/1 system-ui,sans-serif;
+  letter-spacing:.48em;
+  text-transform:uppercase;
+  opacity:.8;
+  animation:slFade .7s .2s both;
+}
+.sl-logo{
+  position:relative;
+  display:inline-block;
+  color:#f3fbff;
+  font:900 clamp(38px,9vw,92px)/.9 system-ui,-apple-system,"Segoe UI",sans-serif;
+  letter-spacing:-.045em;
+  text-shadow:
+    0 0 10px rgba(126,225,255,.55),
+    0 0 35px rgba(74,141,255,.24),
+    0 3px 0 #0b1824;
+  filter:drop-shadow(0 0 16px rgba(74,202,255,.13));
+  animation:slFlicker 3.2s .9s infinite;
+}
+.sl-logo::before,
+.sl-logo::after{
+  content:"Snowflake Lab!";
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+.sl-logo::before{
+  color:#43e7ff;
+  transform:translate(-3px,0);
+  clip-path:inset(8% 0 63% 0);
+  animation:slGlitchA 2.2s steps(1,end) 1.05s infinite;
+  opacity:.85;
+}
+.sl-logo::after{
+  color:#ff4d9d;
+  transform:translate(3px,0);
+  clip-path:inset(58% 0 9% 0);
+  animation:slGlitchB 1.8s steps(1,end) 1.2s infinite;
+  opacity:.7;
+}
+.sl-bar{
+  width:min(360px,58vw);
+  height:2px;
+  margin:23px auto 0;
+  background:linear-gradient(90deg,transparent,#5de5ff,#fff,#ff64a7,transparent);
+  box-shadow:0 0 14px rgba(93,229,255,.55);
+  animation:slBar 1.15s .35s both;
+}
+.sl-status{
+  margin-top:13px;
+  color:#7d91a8;
+  font:600 10px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  animation:slStatus 1.4s .7s both;
+}
+.sl-status::after{
+  content:"";
+  animation:slDots 1s steps(4,end) infinite;
+}
+.sl-snow{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.75;
+  background-image:
+    radial-gradient(circle,rgba(255,255,255,.9) 0 1px,transparent 1.6px),
+    radial-gradient(circle,rgba(125,218,255,.65) 0 1px,transparent 1.5px),
+    radial-gradient(circle,rgba(255,255,255,.55) 0 1px,transparent 1.4px);
+  background-size:97px 113px,137px 151px,61px 83px;
+  background-position:10px -30px,40px 20px,-20px 10px;
+  animation:slSnow 3.5s linear infinite;
+}
+.sl-noise{
+  position:absolute;
+  inset:0;
+  opacity:.055;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+  animation:slNoise .18s steps(2,end) infinite;
+}
+@keyframes slCore{from{opacity:0;transform:scale(.82);filter:blur(9px)}60%{opacity:1;transform:scale(1.025);filter:blur(0)}to{transform:scale(1)}}
+@keyframes slFade{from{opacity:0;transform:translateY(8px)}to{opacity:.8;transform:none}}
+@keyframes slBar{from{width:0;opacity:0}to{width:min(360px,58vw);opacity:1}}
+@keyframes slStatus{from{opacity:0;letter-spacing:.55em}to{opacity:1;letter-spacing:.22em}}
+@keyframes slDots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+@keyframes slFlicker{0%,9%,12%,100%{opacity:1}10%{opacity:.78}11%{opacity:.94}54%{opacity:1}55%{opacity:.86}56%{opacity:1}}
+@keyframes slGlitchA{0%,72%,100%{clip-path:inset(8% 0 63% 0);transform:translate(-3px,0)}73%{clip-path:inset(42% 0 39% 0);transform:translate(7px,-2px)}74%{clip-path:inset(5% 0 75% 0);transform:translate(-8px,1px)}75%{clip-path:inset(65% 0 8% 0);transform:translate(3px,0)}76%{clip-path:inset(8% 0 63% 0);transform:translate(-3px,0)}}
+@keyframes slGlitchB{0%,63%,100%{clip-path:inset(58% 0 9% 0);transform:translate(3px,0)}64%{clip-path:inset(14% 0 66% 0);transform:translate(-8px,2px)}65%{clip-path:inset(73% 0 3% 0);transform:translate(6px,-1px)}66%{clip-path:inset(38% 0 42% 0);transform:translate(-3px,0)}67%{clip-path:inset(58% 0 9% 0);transform:translate(3px,0)}}
+@keyframes slScan{from{transform:translateY(-8px)}to{transform:translateY(8px)}}
+@keyframes slSpin{to{transform:rotate(360deg)}}
+@keyframes slGrid{from{transform:perspective(500px) rotateX(58deg) translateY(16%) scale(1)}to{transform:perspective(500px) rotateX(58deg) translateY(21%) scale(1.05)}}
+@keyframes slSnow{from{background-position:10px -30px,40px 20px,-20px 10px}to{background-position:10px 180px,40px 250px,-20px 150px}}
+@keyframes slNoise{0%{transform:translate(0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(0)}}
+@media (prefers-reduced-motion:reduce){
+  #slIntro *{animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+
 </style>
 </head>
 <body>
+
+<div id="slIntro" aria-label="Snowflake Lab startup">
+  <div class="sl-grid"></div>
+  <div class="sl-snow"></div>
+  <div class="sl-noise"></div>
+  <div class="sl-core">
+    <div class="sl-eyebrow">EXPERIMENTAL SANDBOX</div>
+    <div class="sl-logo">Snowflake Lab!</div>
+    <div class="sl-bar"></div>
+    <div class="sl-status">INITIALIZING LAB</div>
+  </div>
+</div>
+
 <div id="app">
   <div id="stage"><div id="world"><canvas id="cv"></canvas></div><div id="grav"></div><button id="menuBtn" aria-label="Menyu"><span id="mAv">🧪</span></button></div>
   <div id="bar">
@@ -112,7 +288,7 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
   </div>
 </div>
 <div id="menu"><div id="sheet">
-  <div id="mhead"><div id="mtabs"><button class="tab on" data-p="prof">Profil</button><button class="tab" data-p="rating">Reyting</button><button class="tab" data-p="exp">Tajribalar</button><button class="tab" data-p="set">Sozlamalar</button></div><button class="b" id="mclose" aria-label="Yopish">✕</button></div>
+  <div id="mhead"><div id="mtabs"><button class="tab on" data-p="prof">Profil</button><button class="tab" data-p="rating">Reyting</button><button class="tab" data-p="exp">Tajribalar</button><button class="tab" data-p="friends">Doʻstlar</button><button class="tab" data-p="set">Sozlamalar</button></div><button class="b" id="mclose" aria-label="Yopish">✕</button></div>
   <div class="mpage on" id="p-prof">
     <div id="pcard"><div id="pav">🧪</div><div style="flex:1;min-width:0"><input id="pname" maxlength="24" placeholder="Laborant nomi"><div id="puser"></div></div></div>
     <div class="prow"><span>Birga oʻtgan vaqt</span><span id="st-time"></span></div>
@@ -143,6 +319,24 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
       <div class="expIntro">Tajribani maydonda bajaring va natijani tekshirtiring. Faqat shartni toʻgʻri bajarganingizda tajriba reytingga qoʻshiladi.</div>
       <div id="experimentList"></div>
     </div>
+  </div>
+  <div class="mpage" id="p-friends">
+    <div id="fSetup"><div class="expIntro">Doʻstlar sizni topishi uchun noyob nik tanlang.</div>
+      <input id="fNick" maxlength="20" placeholder="nik (a-z, 0-9, _)" autocapitalize="off"><button class="b on" id="fNickBtn">Saqlash</button></div>
+    <div id="fMain">
+      <div class="prow"><span>Mening nikim</span><span id="fMe"></span></div>
+      <input id="fSearch" placeholder="Nik boʻyicha qidirish..." autocapitalize="off"><div id="fList"></div>
+      <div class="srow"><span>Laboratoriyamni koʻrsatish<small>Oʻchirsangiz, doʻstlar faqat profilingizni koʻradi.</small></span><button class="b on" id="fShare">Yoqilgan</button></div>
+    </div>
+    <div id="fView" style="display:none">
+      <button class="b" id="fBack">← Orqaga</button>
+      <div id="fvHead"><div id="fvBadge" class="rank-emblem"><span>Ⅰ</span></div><div><div id="fvName" style="font-weight:700"></div><div id="fvNick" style="color:#9aa4bd;font-size:12px"></div></div></div>
+      <div class="prow"><span>Daraja</span><span id="fvRank"></span></div>
+      <div class="prow"><span>Bajarilgan tajribalar</span><span id="fvExp"></span></div>
+      <div class="prow"><span>Oʻyin vaqti</span><span id="fvTime"></span></div>
+      <canvas id="fvLab"></canvas><div id="fvNoLab" class="expIntro" style="display:none">Laboratoriya koʻrsatilmagan yoki hali yuklanmagan.</div>
+    </div>
+    <div id="fMsg" class="expIntro"></div>
   </div>
   <div class="mpage" id="p-set">
     <div class="srow"><span>Ovoz effektlari<small>Reaksiya, portlash va material ovozlari</small></span><button class="b on" id="snd">Yoqilgan</button></div>
@@ -1283,10 +1477,11 @@ function showStats(){
   refreshRating();
 }
 function openMenu(page){menuEl.classList.add('on');showPage(page||'prof');showStats();renderExperiments();}
-function closeMenu(){menuEl.classList.remove('on');}
+function closeMenu(){menuEl.classList.remove('on');syncMe();}
 function showPage(pg){
   document.querySelectorAll('#mtabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.p===pg));
   document.getElementById('p-prof').classList.toggle('on',pg==='prof');document.getElementById('p-rating').classList.toggle('on',pg==='rating');document.getElementById('p-exp').classList.toggle('on',pg==='exp');document.getElementById('p-set').classList.toggle('on',pg==='set');
+  document.getElementById('p-friends').classList.toggle('on',pg==='friends');if(pg==='friends')renderFriends();
 }
 document.querySelectorAll('#mtabs .tab').forEach(b=>b.onclick=()=>{showPage(b.dataset.p);if(b.dataset.p==='exp')renderExperiments();});
 menuBtn.addEventListener('pointerdown',e=>e.stopPropagation());   // chizish bilan aralashmasin
@@ -1294,11 +1489,114 @@ menuBtn.onclick=()=>openMenu('prof');
 document.getElementById('mclose').onclick=closeMenu;
 menuEl.addEventListener('pointerdown',e=>{if(e.target===menuEl)closeMenu();});
 window.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
+/* ---- Doʻstlar (Supabase). SQL: supabase_setup.sql ---- */
+const SB_URL='https://rdimlatfsdwmwlpijtef.supabase.co',SB_KEY='sb_publishable_KsQHo4g8TWjhQfmE-sCcow_QWrw6fTT';   // <-- shu ikkitasini toʻldiring
+const sbOK=!/YOUR-/.test(SB_URL+SB_KEY),fE=id=>document.getElementById(id);
+let TOK=null;try{TOK=localStorage.getItem('lab_tok');}catch(e){}
+const freshTok=!TOK;
+if(!TOK){TOK=(crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2))+Math.random().toString(36).slice(2);try{localStorage.setItem('lab_tok',TOK);}catch(e){}}
+async function rpc(fn,args){
+  const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:Object.assign({'Content-Type':'application/json',apikey:SB_KEY},SB_KEY.startsWith('eyJ')?{Authorization:'Bearer '+SB_KEY}:{}),body:JSON.stringify(args)});
+  const t=await r.text();let j=null;try{j=JSON.parse(t);}catch(e){}
+  if(!r.ok)throw new Error((j&&j.message)||'xato');
+  return j;
+}
+if(CS){   // kalitni Telegram bulutiga ham zaxiralaymiz (telefon almashsa tiklanadi)
+  if(freshTok&&sbOK)CS.getItem('lab_tok',(e,v)=>{if(e||!v){CS.setItem('lab_tok',TOK,()=>{});return;}
+    TOK=v;try{localStorage.setItem('lab_tok',v);}catch(x){}
+    rpc('get_me',{p_token:v}).then(r=>{if(r&&r.nickname){prof.nick=r.nickname;saveProf();renderFriends();}}).catch(()=>{});});
+  else CS.setItem('lab_tok',TOK,()=>{});
+}
+let syncing=false;
+async function syncMe(){
+  if(!sbOK||!prof.nick||syncing)return;syncing=true;
+  try{let lab=null;const sh=prof.share!==false;
+    if(sh&&touched){try{lab=encode();}catch(e){}if(lab&&lab.length>1500000)lab=null;}
+    await rpc('save_player',{p_token:TOK,p_nick:prof.nick,p_name:dispName(),p_exp:getRating().total,p_sec:prof.sec|0,p_lab:lab,p_share:sh});
+  }catch(e){}
+  syncing=false;
+}
+function fMsg(m){fE('fMsg').textContent=m||'';}
+function rankOf(n){for(let i=RANKS.length-1;i>=0;i--)if(n>=RANKS[i].need)return RANKS[i];return RANKS[0];}
+function renderFriends(){
+  fE('fSetup').style.display=prof.nick?'none':'block';
+  fE('fMain').style.display=prof.nick?'block':'none';
+  fE('fView').style.display='none';
+  fE('fMe').textContent=prof.nick?'@'+prof.nick:'';
+  const s=fE('fShare'),on=prof.share!==false;s.classList.toggle('on',on);s.textContent=on?'Yoqilgan':'Oʻchirilgan';
+  fMsg(sbOK?'':'Supabase ulanmagan: kodda SB_URL va SB_KEY ni toʻldiring.');
+}
+fE('fNickBtn').onclick=async()=>{
+  const v=fE('fNick').value.trim().toLowerCase().replace(/^@/,'');
+  if(!/^[a-z0-9_]{3,20}$/.test(v)){fMsg('Nik 3–20 ta belgi: faqat a-z, 0-9 va _');return;}
+  if(!sbOK){fMsg('Supabase ulanmagan.');return;}
+  try{await rpc('save_player',{p_token:TOK,p_nick:v,p_name:dispName(),p_exp:getRating().total,p_sec:prof.sec|0,p_lab:null,p_share:prof.share!==false});
+    prof.nick=v;saveProf();renderFriends();syncMe();}
+  catch(e){fMsg(/nick_taken|duplicate/.test(e.message)?'Bu nik band, boshqasini tanlang.':'Ulanishda xatolik.');}
+};
+fE('fShare').onclick=()=>{prof.share=prof.share===false;saveProf();renderFriends();syncMe();};
+let sT=0;
+fE('fSearch').oninput=()=>{clearTimeout(sT);sT=setTimeout(doSearch,300);};
+async function doSearch(){
+  const q=fE('fSearch').value.trim().toLowerCase().replace(/^@/,''),L=fE('fList');L.textContent='';
+  if(q.length<2||!sbOK){fMsg('');return;}
+  try{const rows=await rpc('search_players',{q});
+    if(!rows.length){fMsg('Hech kim topilmadi.');return;}fMsg('');
+    rows.forEach(r=>{const b=document.createElement('button'),rk=rankOf(r.experiments),t=document.createElement('span');
+      b.className='fi';b.innerHTML='<span class="mini-emblem rank-emblem '+rk.cls+'"><span>'+rk.icon+'</span></span>';
+      t.textContent=(r.display_name||r.nickname)+'  @'+r.nickname;b.append(t);b.onclick=()=>openFriend(r.nickname);L.append(b);});
+  }catch(e){fMsg('Ulanishda xatolik.');}
+}
+function drawLab(str,cv){   // faqat koʻrish: asosiy maydonga tegmaydi
+  const p=str.split(','),w=+p[0],h=+p[1];if(!(w>0&&h>0)||p.length<3)return false;
+  const bin=atob(p[2]),n=w*h,a=new Uint8Array(n);let pos=0,i=0;
+  while(i<n&&pos+1<bin.length){const c=bin.charCodeAt(pos++),v=bin.charCodeAt(pos++);a.fill(v,i,i+c);i+=c;}
+  cv.width=w;cv.height=h;const x=cv.getContext('2d'),im=x.createImageData(w,h),d=im.data;
+  for(let k=0;k<n;k++){const df=DEFS[a[k]],c=a[k]&&df?df.c:[14,17,24];d[k*4]=c[0];d[k*4+1]=c[1];d[k*4+2]=c[2];d[k*4+3]=255;}
+  x.putImageData(im,0,0);return true;
+}
+async function openFriend(nick){
+  try{const p=await rpc('get_player',{p_nick:nick});if(!p){fMsg('Topilmadi.');return;}
+    fE('fMain').style.display='none';fE('fView').style.display='block';fMsg('');
+    const rk=rankOf(p.experiments);
+    fE('fvName').textContent=p.display_name||p.nickname;fE('fvNick').textContent='@'+p.nickname;
+    fE('fvBadge').className='rank-emblem '+rk.cls;fE('fvBadge').innerHTML='<span>'+rk.icon+'</span>';
+    fE('fvRank').textContent=rk.name;fE('fvExp').textContent=p.experiments;fE('fvTime').textContent=fmtTime(p.play_seconds||0);
+    let ok=false;try{ok=!!(p.lab&&drawLab(p.lab,fE('fvLab')));}catch(e){}
+    fE('fvLab').style.display=ok?'block':'none';fE('fvNoLab').style.display=ok?'none':'block';
+  }catch(e){fMsg('Ulanishda xatolik.');}
+}
+fE('fBack').onclick=renderFriends;
+setInterval(syncMe,60000);setTimeout(syncMe,5000);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)syncMe();});
 // saqlangan sozlamalarni qoʻllash
 soundOn=prof.sound!==false;sndBtn.classList.toggle('on',soundOn);sndBtn.textContent=soundOn?'Yoqilgan':'Oʻchirilgan';
 gb.disabled=!glOK;if(glOK&&prof.gfx==='simple')gb.onclick();else gb.classList.toggle('on',useGL);
 refreshProfile();
 setInterval(()=>{if(!document.hidden){prof.sec+=5;saveProf();}},5000);
+
+/* ---- Snowflake Lab! startup intro ---- */
+(function startSnowflakeIntro(){
+  const intro=document.getElementById('slIntro');
+  if(!intro)return;
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const started=performance.now();
+  // Intro always appears on a fresh game/app load.
+  const close=()=>{
+    if(intro.classList.contains('sl-hide'))return;
+    intro.classList.add('sl-hide');
+    setTimeout(()=>intro.remove(),700);
+  };
+  if(reduce){setTimeout(close,850);return;}
+  // Small timing variations make the glitch feel less mechanical.
+  const glitchTimes=[420,930,1370,1760,2080];
+  glitchTimes.forEach(t=>setTimeout(()=>{
+    intro.style.transform=Math.random()<.5?'translateX(-1px)':'translateX(1px)';
+    setTimeout(()=>intro.style.transform='',45);
+  },t));
+  setTimeout(close,2850);
+})();
+
 init();loadSaved();loop();
 })();
 </script>
