@@ -35,20 +35,73 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
 #grav{position:absolute;top:6px;right:12px;z-index:2;font-size:22px;opacity:.75;pointer-events:none}
 .b:active{background:#2c3448}
 .b:disabled{opacity:.4}
+#menuBtn{position:absolute;top:6px;left:8px;z-index:3;width:38px;height:38px;border-radius:50%;border:2px solid #3a4560;background:rgba(22,26,36,.88);color:#fff;font:700 16px system-ui,sans-serif;padding:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#menuBtn img,#pav img{width:100%;height:100%;object-fit:cover}
+#menu{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+#menu.on{display:flex}
+#sheet{width:100%;max-width:480px;max-height:85%;overflow:auto;background:var(--pn);color:var(--tx);border-radius:18px 18px 0 0;padding:12px 14px calc(18px + env(safe-area-inset-bottom,0px));font-family:system-ui,sans-serif}
+#mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+#mtabs{display:flex;gap:4px}
+.mpage{display:none}.mpage.on{display:block}
+#pcard{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+#pav{width:64px;height:64px;border-radius:50%;background:#2c3448;display:flex;align-items:center;justify-content:center;font:700 26px system-ui,sans-serif;overflow:hidden;flex:0 0 auto}
+#pname{width:100%;box-sizing:border-box;background:var(--chip);border:0;border-radius:10px;color:var(--tx);padding:8px 10px;font:600 15px system-ui,sans-serif}
+#puser{font-size:12px;color:#9aa4bd;margin-top:5px}
+.srow,.prow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid #232a3a;font-size:14px;font-weight:600}
+.srow small{display:block;font-weight:400;font-size:11.5px;color:#9aa4bd;margin-top:3px;max-width:230px;line-height:1.35}
+.prow span:last-child{color:#b8c0d4;font-weight:500}
+.srow .b{min-width:98px}
+#sinfo{font-size:12px;color:#ffb35c;min-height:1.2em;padding-top:8px}
+
+
+#expPage{padding-bottom:4px}
+.expIntro{padding:10px 2px 12px;color:#9aa4bd;font-size:12px;line-height:1.45}
+.expCard{position:relative;padding:13px;border:1px solid #2b3448;border-radius:15px;background:linear-gradient(145deg,#202635,#171b26);margin-bottom:9px;box-shadow:0 8px 24px rgba(0,0,0,.16)}
+.expCard.done{border-color:#4c8b68;background:linear-gradient(145deg,#1d3028,#171f1d)}
+.expCard.locked{opacity:.55;filter:saturate(.55)}
+.expCard .expRank{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#8e9ab2;margin-top:4px}
+.expCard .expDiff{font-size:10px;letter-spacing:.7px;padding:3px 7px;border-radius:999px;border:1px solid #354057;color:#b9c4d8}
+.expCard .expLock{font-size:12px;color:#aeb8c9}
+
+.expHead{display:flex;align-items:center;gap:10px}.expIcon{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:radial-gradient(circle at 35% 25%,#fff7c8 0,#d5a63b 18%,#5d4016 58%,#19140a 100%);box-shadow:inset 0 0 0 1px #f4d77a,0 0 16px rgba(220,170,55,.18)}
+.expTitle{font-size:14px;font-weight:800}.expDesc{font-size:11.5px;color:#9aa4bd;margin-top:3px;line-height:1.35}.expFoot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}.expStatus{font-size:11px;color:#aeb7ca}.expStatus.ok{color:#7de2a5;font-weight:700}.expCheck{min-width:88px}
+#ratingTop{padding:10px 0 14px}
+.rank-emblem{position:relative;width:66px;height:66px;flex:0 0 66px;border-radius:20px;display:flex;align-items:center;justify-content:center;isolation:isolate;filter:drop-shadow(0 8px 14px rgba(0,0,0,.28))}
+.rank-emblem:before{content:"";position:absolute;inset:4px;border-radius:17px;transform:rotate(45deg);background:linear-gradient(145deg,#fff,#6b7280 38%,#171a22 72%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.45),inset 0 -5px 9px rgba(0,0,0,.35)}
+.rank-emblem:after{content:"";position:absolute;inset:10px;border-radius:13px;transform:rotate(45deg);background:radial-gradient(circle at 35% 25%,#fff, #7b8495 25%,#252b38 68%);box-shadow:0 0 0 2px rgba(255,255,255,.25),inset 0 2px 5px rgba(255,255,255,.4)}
+.rank-emblem span{position:relative;z-index:2;font-weight:950;font-size:24px;text-shadow:0 2px 3px #000;transform:translateY(-1px)}
+.rank-emblem.bronze:before{background:linear-gradient(145deg,#ffe2aa,#bd7139 40%,#4b2010)}.rank-emblem.bronze:after{background:radial-gradient(circle at 35% 25%,#fff0c7,#c27b42 30%,#562714)}
+.rank-emblem.silver:before{background:linear-gradient(145deg,#ffffff,#aeb8c8 42%,#3c4658)}.rank-emblem.silver:after{background:radial-gradient(circle at 35% 25%,#fff,#bfc9d8 32%,#4d596c)}
+.rank-emblem.gold:before{background:linear-gradient(145deg,#fff6bd,#e4ad27 40%,#68430b)}.rank-emblem.gold:after{background:radial-gradient(circle at 35% 25%,#fff9d8,#f0bd35 30%,#6e4708)}
+.rank-emblem.diamond:before{background:linear-gradient(145deg,#e9ffff,#66d9ff 42%,#214d8c)}.rank-emblem.diamond:after{background:radial-gradient(circle at 35% 25%,#ffffff,#74e5ff 28%,#245a9e)}
+.rank-emblem.platinum:before{background:linear-gradient(145deg,#ffffff,#d7e0ea 42%,#647487)}.rank-emblem.platinum:after{background:radial-gradient(circle at 35% 25%,#fff,#cbd6e3 30%,#617287)}
+.rank-emblem.california:before{background:linear-gradient(145deg,#fff1a8,#e9a72c 40%,#713b0d)}.rank-emblem.california:after{background:radial-gradient(circle at 35% 25%,#fff7c9,#efb13c 30%,#713b0d)}
+.rankitem .ri{position:relative;border-radius:10px;background:#1a1f2c;box-shadow:inset 0 0 0 1px #3a4560}
+.rankitem .ri .mini-emblem{transform:scale(.38);transform-origin:center;width:52px;height:52px}
+#ratingCard{padding:4px 0 12px}
+#ratingTop{display:flex;align-items:center;gap:12px;padding:10px 0 14px}
+#ratingBadge{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:#2c3448;font-size:28px;box-shadow:inset 0 0 0 2px #3a4560}
+#ratingName{font-size:19px;font-weight:800}
+#ratingSub{font-size:12px;color:#9aa4bd;margin-top:3px}
+#ratingBar{height:8px;border-radius:99px;background:#252b3a;overflow:hidden;margin:4px 0 5px}
+#ratingFill{height:100%;width:0;border-radius:99px;background:#6d7cff;transition:width .25s}
+#ratingProgress{font-size:12px;color:#b8c0d4}
+.ranklist{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+.rankitem{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:#202635;color:#9aa4bd;font-size:12px}
+.rankitem .ri{width:25px;height:25px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#2c3448}
+.rankitem.active{color:#fff;background:#2c3448;box-shadow:inset 0 0 0 1px #4b5877}
+.rankitem.locked{opacity:.55}
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="stage"><div id="world"><canvas id="cv"></canvas></div><div id="grav"></div></div>
+  <div id="stage"><div id="world"><canvas id="cv"></canvas></div><div id="grav"></div><button id="menuBtn" aria-label="Menyu"><span id="mAv">🧪</span></button></div>
   <div id="bar">
     <div id="info"></div><div id="tabs"></div><div id="els"></div>
     <div id="szrow"><label>Eni <input id="ww" type="range" min="40" max="800" step="1"></label><label>Boʻyi <input id="hh" type="range" min="40" max="800" step="1"></label><button class="b" id="fitv">Sigʻdirish</button><span id="szinfo"></span></div>
     <div id="ctl">
-      <input id="size" type="range" min="2" max="12" value="5" aria-label="Cho'tka o'lchami">
+      <input id="size" type="range" min="2" max="12" value="5" aria-label="Element yoki asbob o'lchami"><span id="sizeLabel">O'lcham: 5</span>
       <button class="b" id="wind">Shamol: yoʻq</button>
-      <button class="b on" id="snd">Ovoz</button>
-      <button class="b" id="tilt">Qiyalash</button>
-      <button class="b" id="gfx">Chiroyli</button>
       <button class="b" id="erase">Oʻchirgʻich</button>
       <button class="b" id="pause">To‘xtatish</button>
       <button class="b" id="hand">Qoʻl</button>
@@ -58,6 +111,46 @@ canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;displa
     </div>
   </div>
 </div>
+<div id="menu"><div id="sheet">
+  <div id="mhead"><div id="mtabs"><button class="tab on" data-p="prof">Profil</button><button class="tab" data-p="rating">Reyting</button><button class="tab" data-p="exp">Tajribalar</button><button class="tab" data-p="set">Sozlamalar</button></div><button class="b" id="mclose" aria-label="Yopish">✕</button></div>
+  <div class="mpage on" id="p-prof">
+    <div id="pcard"><div id="pav">🧪</div><div style="flex:1;min-width:0"><input id="pname" maxlength="24" placeholder="Laborant nomi"><div id="puser"></div></div></div>
+    <div class="prow"><span>Birga oʻtgan vaqt</span><span id="st-time"></span></div>
+    <div class="prow"><span>Tajriba maydoni</span><span id="st-area"></span></div>
+    <div class="prow"><span>Maydondagi zarralar</span><span id="st-cells"></span></div>
+  </div>
+  <div class="mpage" id="p-rating">
+    <div id="ratingCard">
+      <div id="ratingTop"><div id="ratingBadge" class="rank-emblem"><span>Ⅰ</span></div><div style="flex:1;min-width:0"><div id="ratingName">Boshlangʻich</div><div id="ratingSub">Reyting uchun tajribalarni toʻgʻri bajaring</div></div></div>
+      <div class="prow"><span>Bajarilgan tajribalar</span><span id="st-experiments">0</span></div>
+      <div class="prow"><span>Keyingi reyting</span><span id="ratingNext">Bronza — 5 ta</span></div>
+      <div id="ratingBar"><div id="ratingFill"></div></div>
+      <div id="ratingProgress">0 / 5</div>
+      <div class="ranklist">
+        <div class="rankitem active" data-rank="0"><div class="ri"><span class="mini-emblem rank-emblem"><span>Ⅰ</span></span></div><span>Boshlangʻich<br>0 ta</span></div>
+        <div class="rankitem" data-rank="1"><div class="ri"><span class="mini-emblem rank-emblem bronze"><span>Ⅱ</span></span></div><span>Bronza<br>5 ta</span></div>
+        <div class="rankitem" data-rank="2"><div class="ri"><span class="mini-emblem rank-emblem silver"><span>Ⅲ</span></span></div><span>Kumush<br>15 ta</span></div>
+        <div class="rankitem" data-rank="3"><div class="ri"><span class="mini-emblem rank-emblem gold"><span>IV</span></span></div><span>Oltin<br>30 ta</span></div>
+        <div class="rankitem" data-rank="4"><div class="ri"><span class="mini-emblem rank-emblem diamond"><span>V</span></span></div><span>Olmos<br>50 ta</span></div>
+        <div class="rankitem" data-rank="5"><div class="ri"><span class="mini-emblem rank-emblem platinum"><span>VI</span></span></div><span>Platina<br>75 ta</span></div>
+        <div class="rankitem" data-rank="6"><div class="ri"><span class="mini-emblem rank-emblem california"><span>VII</span></span></div><span>Kaliforniy<br>105 ta</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mpage" id="p-exp">
+    <div id="expPage">
+      <div class="expIntro">Tajribani maydonda bajaring va natijani tekshirtiring. Faqat shartni toʻgʻri bajarganingizda tajriba reytingga qoʻshiladi.</div>
+      <div id="experimentList"></div>
+    </div>
+  </div>
+  <div class="mpage" id="p-set">
+    <div class="srow"><span>Ovoz effektlari<small>Reaksiya, portlash va material ovozlari</small></span><button class="b on" id="snd">Yoqilgan</button></div>
+    <div class="srow"><span>Grafika<small>Chiroyli: yorugʻlik va effektlar. Oddiy: kuchsiz telefonda tezroq.</small></span><button class="b" id="gfx">Chiroyli</button></div>
+    <div class="srow"><span>Giroskop<small>Telefonni qiyalab gravitatsiya yoʻnalishini oʻzgartiring.</small></span><button class="b" id="tilt">Oʻchirilgan</button></div>
+    <div id="sinfo"></div>
+  </div>
+</div></div>
 <script>
 /* =====================================================================
    YANGI ELEMENT QO'SHISH: DEFS ro'yxatiga bitta qator qo'shing.
@@ -495,9 +588,22 @@ function ant(i,x,y){
 }
 function placeStamp(){
   const P=STAMPS[DEFS[sel].id];if(!P)return;SE.tink++;
-  const x0=Math.round(cx)-(P[0].length>>1),y0=Math.round(cy);
-  P.forEach((row,r)=>{for(let c=0;c<row.length;c++){
-    const x=x0+c,y=y0+r;if(row[c]==='#'&&x>=0&&x<W&&y>=0&&y<H&&!type[y*W+x])set(y*W+x,ID.flask);}});
+  // Asboblar ham elementlar kabi tanlangan o'lchamda qo'yiladi.
+  // 5 — standart o'lcham; 2..12 oralig'i mos ravishda kichikdan kattagacha.
+  const scale=Math.max(.4,Math.min(2.4,brush/5));
+  const sh=Math.max(1,Math.round(P.length*scale));
+  const sw=Math.max(1,Math.round(P[0].length*scale));
+  const x0=Math.round(cx)-(sw>>1),y0=Math.round(cy)-(sh>>1);
+  for(let r=0;r<sh;r++){
+    const sr=Math.min(P.length-1,Math.floor(r/scale));
+    for(let c=0;c<sw;c++){
+      const sc=Math.min(P[0].length-1,Math.floor(c/scale));
+      if(P[sr][sc]==='#'){
+        const x=x0+c,y=y0+r;
+        if(x>=0&&x<W&&y>=0&&y<H&&!type[y*W+x])set(y*W+x,ID.flask);
+      }
+    }
+  }
 }
 function conduct(x,y){
   for(const n of NB){const nx=x+n[0],ny=y+n[1];if(nx<0||nx>=W||ny<0||ny>=H)continue;
@@ -776,7 +882,10 @@ function loop(){
 function pos(e){const r=cv.getBoundingClientRect();cx=(e.clientX-r.left)/r.width*W;cy=(e.clientY-r.top)/r.height*H;}
 const els=document.getElementById('els'),tabs=document.getElementById('tabs'),info=document.getElementById('info');
 let cat='powder';
-function showInfo(){info.textContent=DEFS[sel].name+': '+DEFS[sel].info;}
+function showInfo(){
+  const d=DEFS[sel];
+  info.textContent=d.name+': '+d.info+(d.stamp?' | O\'lcham: '+brush:'');
+}
 function build(){
   [...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.c===cat));
   els.innerHTML='';
@@ -791,7 +900,7 @@ CATS.forEach(c=>{const b=document.createElement('button');b.className='tab';b.da
   b.onclick=()=>{cat=c[0];build();};tabs.appendChild(b);});
 document.getElementById('erase').onclick=()=>{sel=0;build();showInfo();};
 build();showInfo();
-document.getElementById('size').oninput=e=>{brush=+e.target.value;};
+document.getElementById('size').oninput=e=>{brush=+e.target.value;document.getElementById('sizeLabel').textContent='O\'lcham: '+brush;showInfo();};
 document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'Davom etish':'Toʻxtatish';};
 document.getElementById('clear').onclick=()=>{snap();type.fill(0);aux.fill(0);vel.fill(0);chg.fill(0);stamp.fill(0);shade.fill(0);temp.fill(20);};
 window.addEventListener('resize',()=>{if(!touched)init();else fit();});
@@ -806,7 +915,7 @@ let glOK=false;
 try{initGL();worldEl.appendChild(glc);glOK=useGL=true;cv.style.opacity=0;}
 catch(e){console.warn('WebGL ishlamadi, oddiy grafika:',e);}
 const gb=document.getElementById('gfx');gb.textContent=glOK?'Chiroyli':'Oddiy';
-gb.onclick=()=>{if(!glOK)return;useGL=!useGL;glc.style.display=useGL?'block':'none';cv.style.opacity=useGL?0:1;gb.textContent=useGL?'Chiroyli':'Oddiy';};
+gb.onclick=()=>{if(!glOK)return;useGL=!useGL;glc.style.display=useGL?'block':'none';cv.style.opacity=useGL?0:1;gb.textContent=useGL?'Chiroyli':'Oddiy';gb.classList.toggle('on',useGL);prof.gfx=useGL?'nice':'simple';saveProf();};
 /* ---- Telefonni qiyalash: gravitatsiya yoʻnalishi sensordan olinadi ---- */
 const ARR={'0,1':'↓','1,1':'↘','1,0':'→','1,-1':'↗','0,-1':'↑','-1,-1':'↖','-1,0':'←','-1,1':'↙'};
 const gravEl=document.getElementById('grav'),tiltBtn=document.getElementById('tilt');
@@ -828,7 +937,7 @@ function motionFallback(){
   if(R)DeviceMotionEvent.requestPermission().then(r=>{if(r==='granted')go();}).catch(()=>{});else go();
 }
 function setTilt(on){
-  tilt=on;first=true;tiltBtn.classList.toggle('on',on);
+  tilt=on;first=true;tiltBtn.classList.toggle('on',on);tiltBtn.textContent=on?'Yoqilgan':'Oʻchirilgan';
   if(!on){setG(0,1);if(tg){try{tg.offEvent('accelerometerChanged',onAcc);tg.offEvent('accelerometerFailed',motionFallback);}catch(e){}if(tg.Accelerometer&&tg.Accelerometer.isStarted)try{tg.Accelerometer.stop();}catch(e){}}return;}
   setG(0,1);
   if(tg&&tg.Accelerometer&&tg.isVersionAtLeast&&tg.isVersionAtLeast('8.0')){
@@ -837,13 +946,13 @@ function setTilt(on){
     tg.onEvent('accelerometerFailed',motionFallback);
     try{tg.Accelerometer.start({refresh_rate:50},ok=>{if(!ok)motionFallback();});}catch(e){motionFallback();}
   }else motionFallback();
-  setTimeout(()=>{if(tilt&&first){setTilt(false);info.textContent='Sensor topilmadi: qiyalash faqat telefonda ishlaydi.';}},2500);
+  setTimeout(()=>{if(tilt&&first){setTilt(false);note('Sensor topilmadi: giroskop faqat telefonda ishlaydi.');}},2500);
 }
 tiltBtn.onclick=()=>setTilt(!tilt);
 const windBtn=document.getElementById('wind');
 windBtn.onclick=()=>{WIND=WIND===0?-1:WIND===-1?1:0;windBtn.textContent='Shamol: '+(WIND<0?'←':WIND>0?'→':'yoʻq');windBtn.classList.toggle('on',WIND!==0);};
 const sndBtn=document.getElementById('snd');
-sndBtn.onclick=()=>{soundOn=!soundOn;sndBtn.classList.toggle('on',soundOn);initAudio();};
+sndBtn.onclick=()=>{soundOn=!soundOn;sndBtn.classList.toggle('on',soundOn);sndBtn.textContent=soundOn?'Yoqilgan':'Oʻchirilgan';prof.sound=soundOn;saveProf();initAudio();};
 /* ---- Orqaga qaytarish: har bir chizish (yoki tozalash) oldidan holat eslab qolinadi ---- */
 const UNDO=[],undoBtn=document.getElementById('undo');
 function snap(){
@@ -958,6 +1067,238 @@ const pend=e=>{ptrs.delete(e.pointerId);
 stageEl.addEventListener('wheel',e=>{e.preventDefault();
   const r=stageEl.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,wx=(x-VX)/VZ,wy=(y-VY)/VZ;
   VZ=Math.min(8,Math.max(.1,VZ*Math.exp(-e.deltaY*.0015)));VX=x-wx*VZ;VY=y-wy*VZ;clampView();applyView();},{passive:false});
+/* ---- Menyu: Profil va Sozlamalar ---- */
+const PKEY='lab_profile_v1',menuEl=document.getElementById('menu'),menuBtn=document.getElementById('menuBtn');
+const prof={sound:true,gfx:'nice',name:'',sec:0,experiments:0};
+try{Object.assign(prof,JSON.parse(localStorage.getItem(PKEY)||'{}'));}catch(e){}
+function saveProf(){try{localStorage.setItem(PKEY,JSON.stringify(prof));}catch(e){}}
+function note(m){info.textContent=m;document.getElementById('sinfo').textContent=m;}
+const tgUser=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user,pname=document.getElementById('pname');
+function dispName(){return prof.name||(tgUser&&tgUser.first_name)||'';}
+function fillAvatar(el){
+  const ini=(dispName()[0]||'🧪').toUpperCase();el.textContent=ini;
+  if(tgUser&&tgUser.photo_url){const im=new Image();im.alt='';im.onload=()=>{el.textContent='';el.appendChild(im);};im.src=tgUser.photo_url;}
+}
+function refreshProfile(){
+  pname.value=dispName();fillAvatar(document.getElementById('pav'));fillAvatar(document.getElementById('mAv'));
+  document.getElementById('puser').textContent=tgUser?(tgUser.username?'@'+tgUser.username:'Telegram foydalanuvchisi'):'Telegramdan tashqarida ochilgan';
+}
+pname.onchange=()=>{prof.name=pname.value.trim().slice(0,24);saveProf();refreshProfile();};
+function fmtTime(s){const m=Math.floor(s/60);return m<1?s+' soniya':m<60?m+' daqiqa':Math.floor(m/60)+' soat '+(m%60)+' daqiqa';}
+const RANKS=[
+  {name:'Boshlangʻich',need:0,icon:'Ⅰ',cls:''},
+  {name:'Bronza',need:5,icon:'Ⅱ',cls:'bronze'},
+  {name:'Kumush',need:15,icon:'Ⅲ',cls:'silver'},
+  {name:'Oltin',need:30,icon:'IV',cls:'gold'},
+  {name:'Olmos',need:50,icon:'V',cls:'diamond'},
+  {name:'Platina',need:75,icon:'VI',cls:'platinum'},
+  {name:'Kaliforniy',need:105,icon:'VII',cls:'california'}
+];
+function getRating(){
+  const total=Math.max(0,Math.floor(Number(prof.experiments)||0));
+  let rank=0;for(let i=RANKS.length-1;i>=0;i--)if(total>=RANKS[i].need){rank=i;break;}
+  const cur=RANKS[rank],next=RANKS[rank+1]||null;
+  const progress=next?total-cur.need:Math.max(0,total-cur.need);
+  const needed=next?next.need-cur.need:0;
+  return {total,rank,cur,next,progress,needed};
+}
+function refreshRating(){
+  const r=getRating();
+  document.getElementById('st-experiments').textContent=r.total;
+  document.getElementById('ratingName').textContent=r.cur.name;
+  document.getElementById('ratingBadge').className='rank-emblem '+(r.cur.cls||'');document.getElementById('ratingBadge').innerHTML='<span>'+r.cur.icon+'</span>';
+  document.getElementById('ratingSub').textContent=r.next?'Keyingi bosqich: '+r.next.name:'Maksimal reyting ochilgan';
+  document.getElementById('ratingNext').textContent=r.next?(r.next.name+' — '+r.next.need+' ta'):'Maksimal';
+  const pct=r.next?Math.min(100,(r.progress/Math.max(1,r.needed))*100):100;
+  document.getElementById('ratingFill').style.width=pct+'%';
+  document.getElementById('ratingProgress').textContent=r.next?(r.progress+' / '+r.needed+' ta'):(r.progress+' ta — maksimum');
+  document.querySelectorAll('.rankitem').forEach(el=>{const k=+el.dataset.rank;el.classList.toggle('active',k===r.rank);el.classList.toggle('locked',k>r.rank);});
+}
+// Keyingi bosqichdagi Tajribalar oynasi shu funksiya orqali reytingni oshiradi.
+// Har bir tajriba faqat bir marta sanalishi uchun id yuborish mumkin.
+function completeExperiment(id){
+  if(id){prof.completedExperiments=Array.isArray(prof.completedExperiments)?prof.completedExperiments:[];if(prof.completedExperiments.includes(id))return false;prof.completedExperiments.push(id);}
+  prof.experiments=Math.max(0,(Number(prof.experiments)||0)+1);saveProf();refreshRating();return true;
+}
+
+const EXPERIMENTS=[];
+const RANK_EXP_COUNTS=[5,10,15,20,25,30,0];
+const RANK_LABELS=['Boshlangʻich','Bronza','Kumush','Oltin','Olmos','Platina','Kaliforniy'];
+const DIFF=['Oson','Boshlangʻich','Oʻrta','Qiyin','Juda qiyin','Ekspert','Maksimal'];
+function addExp(rank,no,title,desc,check,icon){
+  EXPERIMENTS.push({id:'r'+rank+'e'+no,rank,no,title,desc,check,icon:icon||['◈','◇','✦','⚗','◉','⬢'][rank]});
+}
+const c=countMat;
+// Boshlangʻich — 5 ta
+addExp(0,1,'Qum minorasi','Maydonda kamida 80 ta qum zarrachasidan minora yarating.',()=>c('sand')>=80,'◈');
+addExp(0,2,'Suv havzasi','Maydonda kamida 60 ta suv zarrachasi hosil qiling.',()=>c('water')>=60,'◉');
+addExp(0,3,'Tuproq va suv','Tuproq va suvdan kamida 15 ta loy hosil qiling.',()=>c('mud')>=15,'◇');
+addExp(0,4,'Olovni o‘chirish','Maydonda kamida 20 ta suv va 10 ta kul qoldiring.',()=>c('water')>=20&&c('ash')>=10,'✦');
+addExp(0,5,'Urug‘ uyg‘onishi','Kamida 5 ta urug‘ni o‘simlikka aylantiring.',()=>c('plant')>=5,'⚗');
+
+// Bronza — 10 ta
+addExp(1,1,'Qumdan shisha','Kamida 15 ta shisha hosil qiling.',()=>c('glass')>=15);
+addExp(1,2,'Zangning boshlanishi','Kamida 8 ta zang hosil qiling.',()=>c('rust')>=8);
+addExp(1,3,'Sho‘r suv','Kamida 40 ta sho‘r suv hosil qiling.',()=>c('saltwater')>=40);
+addExp(1,4,'Moy va suv','Kamida 25 ta moy va 25 ta suvni bir maydonda saqlang.',()=>c('oil')>=25&&c('water')>=25);
+addExp(1,5,'Muzlatish','Kamida 20 ta muz va 20 ta qor hosil qiling.',()=>c('ice')>=20&&c('snow')>=20);
+addExp(1,6,'Tutun izi','Kamida 20 ta tutun zarrachasini hosil qiling.',()=>c('smoke')>=20);
+addExp(1,7,'Yog‘och alangasi','Kamida 15 ta kul va 10 ta tutun hosil qiling.',()=>c('ash')>=15&&c('smoke')>=10);
+addExp(1,8,'Shisha devor','Kamida 30 ta shisha hosil qiling.',()=>c('glass')>=30);
+addExp(1,9,'Ikki material','Kamida 30 ta qum va 20 ta toshni bir vaqtda saqlang.',()=>c('sand')>=30&&c('stone')>=20);
+addExp(1,10,'Hayot maydoni','Kamida 12 ta o‘simlik va 30 ta suv bo‘lsin.',()=>c('plant')>=12&&c('water')>=30);
+
+// Kumush — 15 ta
+addExp(2,1,'Shisha ustasi','Kamida 45 ta shisha hosil qiling.',()=>c('glass')>=45);
+addExp(2,2,'Loy laboratoriyasi','Kamida 40 ta loy va 20 ta tuproq qoldiring.',()=>c('mud')>=40&&c('soil')>=20);
+addExp(2,3,'Zang tezligi','Kamida 20 ta zang hosil qiling.',()=>c('rust')>=20);
+addExp(2,4,'Sovuq qatlam','Kamida 40 ta muz va 30 ta qor hosil qiling.',()=>c('ice')>=40&&c('snow')>=30);
+addExp(2,5,'Gaz kamerasi','Kamida 25 ta CO₂ va 15 ta tutun hosil qiling.',()=>c('co2')>=25&&c('smoke')>=15);
+addExp(2,6,'O‘simlik bog‘i','Kamida 25 ta o‘simlik va 50 ta suv bo‘lsin.',()=>c('plant')>=25&&c('water')>=50);
+addExp(2,7,'Kislotali sinov','Kamida 20 ta zang va 20 ta tosh qoldiring.',()=>c('rust')>=20&&c('stone')>=20);
+addExp(2,8,'Obsidian yadrosi','Kamida 15 ta obsidian hosil qiling.',()=>c('obsidian')>=15);
+addExp(2,9,'Yonuvchi qatlam','Kamida 20 ta kul, 15 ta tutun va 10 ta ko‘mir bo‘lsin.',()=>c('ash')>=20&&c('smoke')>=15&&c('coal')>=10);
+addExp(2,10,'Shirin eritma','Kamida 30 ta shakar va 30 ta suv bo‘lsin.',()=>c('sugar')>=30&&c('water')>=30);
+addExp(2,11,'Og‘ir suyuqlik','Kamida 20 ta simob va 20 ta suvni bir maydonda saqlang.',()=>c('mercury')>=20&&c('water')>=20);
+addExp(2,12,'Mum sinovi','Kamida 15 ta mum, 10 ta kul va 10 ta tutun hosil qiling.',()=>c('wax')>=15&&c('ash')>=10&&c('smoke')>=10);
+addExp(2,13,'Asal oqimi','Kamida 35 ta asal va 25 ta suv bo‘lsin.',()=>c('honey')>=35&&c('water')>=25);
+addExp(2,14,'Elektr o‘tkazuvchanlik','Kamida 20 ta temir va 20 ta mis bo‘lsin.',()=>c('iron')>=20&&c('copper')>=20);
+addExp(2,15,'Urug‘lar koloniyasi','Kamida 35 ta o‘simlik hosil qiling.',()=>c('plant')>=35);
+
+// Oltin — 20 ta
+addExp(3,1,'Katta shisha sintezi','Kamida 70 ta shisha hosil qiling.',()=>c('glass')>=70);
+addExp(3,2,'Obsidian qalqoni','Kamida 30 ta obsidian hosil qiling.',()=>c('obsidian')>=30);
+addExp(3,3,'Zang laboratoriyasi','Kamida 40 ta zang va 25 ta temir qoldiring.',()=>c('rust')>=40&&c('iron')>=25);
+addExp(3,4,'Gaz muvozanati','Kamida 40 ta CO₂, 20 ta vodorod va 20 ta tutun bo‘lsin.',()=>c('co2')>=40&&c('hydrogen')>=20&&c('smoke')>=20);
+addExp(3,5,'Hayot va zahar','Kamida 30 ta o‘simlik va 15 ta zaharli gaz bo‘lsin.',()=>c('plant')>=30&&c('toxic')>=15);
+addExp(3,6,'Sovuq tajribasi','Kamida 60 ta muz va 30 ta qor hosil qiling.',()=>c('ice')>=60&&c('snow')>=30);
+addExp(3,7,'Lava nazorati','Kamida 35 ta lava va 25 ta obsidian bo‘lsin.',()=>c('lava')>=35&&c('obsidian')>=25);
+addExp(3,8,'Metall juftligi','Kamida 35 ta temir va 35 ta mis bo‘lsin.',()=>c('iron')>=35&&c('copper')>=35);
+addExp(3,9,'Porox sinovi','Kamida 25 ta porox va 20 ta kul hosil qiling.',()=>c('gunpowder')>=25&&c('ash')>=20);
+addExp(3,10,'Sirka va soda','Kamida 20 ta CO₂ hosil qiling.',()=>c('co2')>=20);
+addExp(3,11,'Suyultirish','Kamida 30 ta suyultirilgan kislota va 30 ta suv bo‘lsin.',()=>c('dilacid')>=30&&c('water')>=30);
+addExp(3,12,'Ishqor sinovi','Kamida 25 ta ishqor va 20 ta indikator bo‘lsin.',()=>c('lye')>=25&&c('ind')>=20);
+addExp(3,13,'Spirt eritmasi','Kamida 30 ta spirt eritmasi va 20 ta suv bo‘lsin.',()=>c('ethsol')>=30&&c('water')>=20);
+addExp(3,14,'Magnit maydoni','Kamida 30 ta temir qipiq va 1 ta magnit bo‘lsin.',()=>c('filings')>=30&&c('magnet')>=1);
+addExp(3,15,'Chaqmoq izi','Kamida 10 ta elektrlangan material qoldiring: temir yoki misdan jami 50 ta.',()=>c('iron')+c('copper')>=50);
+addExp(3,16,'Issiq va sovuq','Kamida 25 ta lava va 25 ta muz bir vaqtda bo‘lsin.',()=>c('lava')>=25&&c('ice')>=25);
+addExp(3,17,'O‘simlik fermasi','Kamida 60 ta o‘simlik va 50 ta suv bo‘lsin.',()=>c('plant')>=60&&c('water')>=50);
+addExp(3,18,'Qalin loy','Kamida 70 ta loy hosil qiling.',()=>c('mud')>=70);
+addExp(3,19,'Material uchligi','Kamida 30 tadan qum, tosh va yog‘och saqlang.',()=>c('sand')>=30&&c('stone')>=30&&c('wood')>=30);
+addExp(3,20,'Laboratoriya tartibi','Kamida 10 tadan shisha, temir, mis, suv va tuproq bo‘lsin.',()=>c('glass')>=10&&c('iron')>=10&&c('copper')>=10&&c('water')>=10&&c('soil')>=10);
+
+// Olmos — 25 ta
+addExp(4,1,'Kristall fabrika','Kamida 100 ta shisha hosil qiling.',()=>c('glass')>=100);
+addExp(4,2,'Vulqon yadrosi','Kamida 50 ta obsidian va 40 ta lava bo‘lsin.',()=>c('obsidian')>=50&&c('lava')>=40);
+addExp(4,3,'Kuchli zang','Kamida 70 ta zang va 30 ta temir bo‘lsin.',()=>c('rust')>=70&&c('iron')>=30);
+addExp(4,4,'Gazlar uchligi','Kamida 50 tadan CO₂, vodorod va metan bo‘lsin.',()=>c('co2')>=50&&c('hydrogen')>=50&&c('methane')>=50);
+addExp(4,5,'Sovuq ombor','Kamida 100 ta muz, 50 ta qor va 20 ta suyuq azot bo‘lsin.',()=>c('ice')>=100&&c('snow')>=50&&c('nitrogen')>=20);
+addExp(4,6,'Hayot sinovi','Kamida 80 ta o‘simlik va 20 ta zaharli gaz bo‘lsin.',()=>c('plant')>=80&&c('toxic')>=20);
+addExp(4,7,'Metall laboratoriyasi','Kamida 60 tadan temir va mis bo‘lsin.',()=>c('iron')>=60&&c('copper')>=60);
+addExp(4,8,'Kislota bosimi','Kamida 40 ta kislota, 30 ta zang va 30 ta tosh bo‘lsin.',()=>c('acid')>=40&&c('rust')>=30&&c('stone')>=30);
+addExp(4,9,'Ishqor-kislota','Kamida 35 ta kislota va 35 ta ishqor bo‘lsin.',()=>c('acid')>=35&&c('lye')>=35);
+addExp(4,10,'Indikator spektri','Kamida 30 ta indikator, 20 ta kislotali va 20 ta ishqoriy indikator bo‘lsin.',()=>c('ind')>=30&&c('inda')>=20&&c('indb')>=20);
+addExp(4,11,'Porox nazorati','Kamida 40 ta porox va 25 ta kul qoldiring.',()=>c('gunpowder')>=40&&c('ash')>=25);
+addExp(4,12,'Magnit kolleksiyasi','Kamida 60 ta temir qipiq va magnit bo‘lsin.',()=>c('filings')>=60&&c('magnet')>=1);
+addExp(4,13,'Chaqmoq laboratoriyasi','Kamida 30 ta mis, 30 ta temir va 10 ta chaqmoq hosil qiling.',()=>c('copper')>=30&&c('iron')>=30&&c('lightning')>=10);
+addExp(4,14,'Baliqlar havzasi','Kamida 20 ta baliq va 100 ta suv bo‘lsin.',()=>c('fish')>=20&&c('water')>=100);
+addExp(4,15,'Chumoli koloniyasi','Kamida 20 ta chumoli, 40 ta tuproq va 20 ta o‘simlik bo‘lsin.',()=>c('ant')>=20&&c('soil')>=40&&c('plant')>=20);
+addExp(4,16,'Asal va o‘simlik','Kamida 50 ta asal va 60 ta o‘simlik bo‘lsin.',()=>c('honey')>=50&&c('plant')>=60);
+addExp(4,17,'Moy dengizi','Kamida 80 ta moy va 40 ta suv bo‘lsin.',()=>c('oil')>=80&&c('water')>=40);
+addExp(4,18,'Qalin suyuqlik','Kamida 60 ta asal va 60 ta loy bo‘lsin.',()=>c('honey')>=60&&c('mud')>=60);
+addExp(4,19,'Yuqori bosqich aralashmasi','Kamida 25 tadan shisha, obsidian, zang va muz bo‘lsin.',()=>c('glass')>=25&&c('obsidian')>=25&&c('rust')>=25&&c('ice')>=25);
+addExp(4,20,'To‘rtta gaz','Kamida 30 tadan CO₂, tutun, metan va vodorod bo‘lsin.',()=>c('co2')>=30&&c('smoke')>=30&&c('methane')>=30&&c('hydrogen')>=30);
+addExp(4,21,'Material sinovi','Kamida 50 tadan qum, tuproq va tosh bo‘lsin.',()=>c('sand')>=50&&c('soil')>=50&&c('stone')>=50);
+addExp(4,22,'Issiqlik manbalari','Kamida 20 tadan lava, olov va bug‘ bo‘lsin.',()=>c('lava')>=20&&c('fire')>=20&&c('steam')>=20);
+addExp(4,23,'O‘sish chegarasi','Kamida 100 ta o‘simlik hosil qiling.',()=>c('plant')>=100);
+addExp(4,24,'Ikki bosqichli eritma','Kamida 40 ta suyultirilgan kislota va 40 ta spirt eritmasi bo‘lsin.',()=>c('dilacid')>=40&&c('ethsol')>=40);
+addExp(4,25,'Olmos laboratoriyasi','Kamida 15 tadan shisha, obsidian, o‘simlik, zang va CO₂ bo‘lsin.',()=>c('glass')>=15&&c('obsidian')>=15&&c('plant')>=15&&c('rust')>=15&&c('co2')>=15);
+
+// Platina — 30 ta
+const plat=[
+['Gigant shisha zavodi','Kamida 150 ta shisha.',()=>c('glass')>=150],
+['Vulqon majmuasi','80 obsidian va 60 lava.',()=>c('obsidian')>=80&&c('lava')>=60],
+['Zang rekordchisi','120 zang va 50 temir.',()=>c('rust')>=120&&c('iron')>=50],
+['Gaz to‘rtligi','60 CO₂, 60 vodorod, 60 metan va 40 tutun.',()=>c('co2')>=60&&c('hydrogen')>=60&&c('methane')>=60&&c('smoke')>=40],
+['Muz qal’asi','150 muz va 80 qor.',()=>c('ice')>=150&&c('snow')>=80],
+['Yashil laboratoriya','150 o‘simlik va 100 suv.',()=>c('plant')>=150&&c('water')>=100],
+['Metall juftligi+','100 temir va 100 mis.',()=>c('iron')>=100&&c('copper')>=100],
+['Kuchli kislota sinovi','70 kislota, 50 zang, 50 tosh.',()=>c('acid')>=70&&c('rust')>=50&&c('stone')>=50],
+['Neytrallash','60 kislota va 60 ishqor.',()=>c('acid')>=60&&c('lye')>=60],
+['Indikator uchligi','60 indikator, 40 kislotali, 40 ishqoriy.',()=>c('ind')>=60&&c('inda')>=40&&c('indb')>=40],
+['Porox poligoni','70 porox va 50 kul.',()=>c('gunpowder')>=70&&c('ash')>=50],
+['Magnit koni','120 temir qipiq va magnit.',()=>c('filings')>=120&&c('magnet')>=1],
+['Elektr tarmog‘i','80 temir, 80 mis va 15 chaqmoq.',()=>c('iron')>=80&&c('copper')>=80&&c('lightning')>=15],
+['Baliq fermasi','50 baliq va 180 suv.',()=>c('fish')>=50&&c('water')>=180],
+['Chumoli shahri','50 chumoli, 80 tuproq, 40 o‘simlik.',()=>c('ant')>=50&&c('soil')>=80&&c('plant')>=40],
+['Asal rezervuari','100 asal va 100 suv.',()=>c('honey')>=100&&c('water')>=100],
+['Moy qatlamlari','150 moy va 60 suv.',()=>c('oil')>=150&&c('water')>=60],
+['Qalin aralashma','100 asal va 100 loy.',()=>c('honey')>=100&&c('mud')>=100],
+['Sovuq va issiq qarama-qarshiligi','50 lava, 50 muz, 30 suyuq azot.',()=>c('lava')>=50&&c('ice')>=50&&c('nitrogen')>=30],
+['Hayot va zahar','120 o‘simlik va 40 zaharli gaz.',()=>c('plant')>=120&&c('toxic')>=40],
+['Laboratoriya beshligi','40 shisha, obsidian, zang, muz va CO₂.',()=>c('glass')>=40&&c('obsidian')>=40&&c('rust')>=40&&c('ice')>=40&&c('co2')>=40],
+['Gaz laboratoriyasi','50 CO₂, 50 metan, 50 vodorod.',()=>c('co2')>=50&&c('methane')>=50&&c('hydrogen')>=50],
+['Qum koni','200 qum va 80 tosh.',()=>c('sand')>=200&&c('stone')>=80],
+['Tuproq imperiyasi','180 tuproq va 120 loy.',()=>c('soil')>=180&&c('mud')>=120],
+['Energiya izi','40 olov, 30 uchqun va 20 portlash.',()=>c('fire')>=40&&c('spark')>=30&&c('explosion')>=20],
+['Idishlar to‘plami','Kamida 1 tadan probirka, stakan, kolba va voronka.',()=>c('tube')>=1&&c('beaker')>=1&&c('erlen')>=1&&c('funnel')>=1],
+['Qizdirish stansiyasi','Kamida 1 qizdirgich, 1 gorelka va 50 shisha.',()=>c('heater')>=1&&c('burner')>=1&&c('glass')>=50],
+['Sovutish stansiyasi','Kamida 1 sovutgich, 1 termometr va 80 muz.',()=>c('cooler')>=1&&c('thermo')>=1&&c('ice')>=80],
+['Kimyoviy uchlik','50 sirka, 50 soda va 30 CO₂.',()=>c('vinegar')>=50&&c('soda')>=50&&c('co2')>=30],
+['Platina sinovi','50 shisha, 50 obsidian, 50 o‘simlik, 50 zang.',()=>c('glass')>=50&&c('obsidian')>=50&&c('plant')>=50&&c('rust')>=50]
+]
+plat.forEach((x,i)=>addExp(5,i+1,x[0],x[1],x[2],'⬢'));
+
+// Kaliforniy — maksimal reyting: barcha tajribalar ochiq, yangi tajriba talabi yo‘q.
+
+function countMat(id){const t=ID[id];if(t==null)return 0;let n=0;for(let i=0;i<type.length;i++)if(type[i]===t)n++;return n;}
+function renderExperiments(){
+  const box=document.getElementById('experimentList');if(!box)return;
+  const done=Array.isArray(prof.completedExperiments)?prof.completedExperiments:[];
+  const rating=getRating();
+  box.innerHTML=EXPERIMENTS.map((e)=>{
+    const unlocked=e.rank<=rating.rank;
+    const isDone=done.includes(e.id);
+    const label=e.rank===0?'Boshlangʻich':RANKS[e.rank].name;
+    const lock=!unlocked;
+    return `<div class="expCard ${isDone?'done':''} ${lock?'locked':''}" data-exp="${e.id}"><div class="expHead"><div class="expIcon">${e.icon}</div><div style="flex:1;min-width:0"><div class="expTitle">${e.title}</div><div class="expDesc">${e.desc}</div><div class="expRank">${label} · ${DIFF[e.rank]}</div></div><span class="expDiff">${e.no}/${RANK_EXP_COUNTS[e.rank]}</span></div><div class="expFoot"><span class="expStatus ${isDone?'ok':''}">${isDone?'✓ Bajarilgan':lock?'🔒 '+RANKS[e.rank].name+' kerak':'Tayyor emas'}</span><button class="b expCheck" ${isDone||lock?'disabled':''} onclick="checkExperiment('${e.id}')">${isDone?'Bajarildi':lock?'Qulflangan':'Tekshirish'}</button></div></div>`;
+  }).join('');
+}
+function checkExperiment(id){
+  const e=EXPERIMENTS.find(x=>x.id===id);if(!e)return;
+  if(e.rank>getRating().rank){note('Bu tajriba hali qulflangan. Avval joriy reytingdagi tajribalarni bajaring.');return;}
+  if(Array.isArray(prof.completedExperiments)&&prof.completedExperiments.includes(id)){return;}
+  if(e.check()){
+    completeExperiment(id);renderExperiments();showStats();note('Tajriba muvaffaqiyatli bajarildi! Reyting hisoblandi.');
+  }else{
+    const st=document.getElementById('exp-status-'+id);if(st){st.textContent='Shart bajarilmagan';st.classList.remove('ok');}
+    note('Natija hali yetarli emas. Tajribani maydonda toʻgʻri bajaring.');
+  }
+}
+function showStats(){
+  let n=0;for(let i=0;i<type.length;i++)if(type[i])n++;
+  document.getElementById('st-time').textContent=fmtTime(prof.sec);
+  document.getElementById('st-area').textContent=W+' × '+H;
+  document.getElementById('st-cells').textContent=String(n).replace(/\B(?=(\d{3})+$)/g,' ');
+  refreshRating();
+}
+function openMenu(page){menuEl.classList.add('on');showPage(page||'prof');showStats();renderExperiments();}
+function closeMenu(){menuEl.classList.remove('on');}
+function showPage(pg){
+  document.querySelectorAll('#mtabs .tab').forEach(b=>b.classList.toggle('on',b.dataset.p===pg));
+  document.getElementById('p-prof').classList.toggle('on',pg==='prof');document.getElementById('p-rating').classList.toggle('on',pg==='rating');document.getElementById('p-exp').classList.toggle('on',pg==='exp');document.getElementById('p-set').classList.toggle('on',pg==='set');
+}
+document.querySelectorAll('#mtabs .tab').forEach(b=>b.onclick=()=>{showPage(b.dataset.p);if(b.dataset.p==='exp')renderExperiments();});
+menuBtn.addEventListener('pointerdown',e=>e.stopPropagation());   // chizish bilan aralashmasin
+menuBtn.onclick=()=>openMenu('prof');
+document.getElementById('mclose').onclick=closeMenu;
+menuEl.addEventListener('pointerdown',e=>{if(e.target===menuEl)closeMenu();});
+window.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
+// saqlangan sozlamalarni qoʻllash
+soundOn=prof.sound!==false;sndBtn.classList.toggle('on',soundOn);sndBtn.textContent=soundOn?'Yoqilgan':'Oʻchirilgan';
+gb.disabled=!glOK;if(glOK&&prof.gfx==='simple')gb.onclick();else gb.classList.toggle('on',useGL);
+refreshProfile();
+setInterval(()=>{if(!document.hidden){prof.sec+=5;saveProf();}},5000);
 init();loadSaved();loop();
 })();
 </script>
